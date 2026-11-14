@@ -67,3 +67,7 @@ footer{display:flex;gap:18px;align-items:center;border-top:1px solid #ccc;backgr
   .matches-panel{height:auto;max-height:65vh;display:flex;flex-direction:column;overflow:hidden}
   .listing-list{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden}
 }
+
+.category-descriptions{margin-top:7px;font-size:11px;line-height:1.5;color:#555}
+.category-descriptions div{margin:1px 0}
+.category-descriptions strong{color:#222;font-weight:bold}
