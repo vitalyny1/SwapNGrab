@@ -96,3 +96,7 @@ footer{display:flex;gap:18px;align-items:center;border-top:1px solid #ccc;backgr
 #authForm label[hidden]{display:none}
 .post-panel .post-note{overflow-wrap:anywhere}
 @media(max-width:700px){.listing-photo{width:58px;height:58px}}
+
+/* Keep the offer action above panel content and reliably clickable. */
+#postOfferButton{position:relative;z-index:2;pointer-events:auto;cursor:pointer}
+#postOfferButton:disabled{opacity:.65;cursor:wait}
