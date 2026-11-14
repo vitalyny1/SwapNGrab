@@ -19,10 +19,21 @@
     <h1>WHAT ARE YOU LOOKING FOR?</h1>
     <p class="intro">Tell us what you want and what you can trade.</p>
     <label for="wantInput">I WANT</label>
-    <input id="wantInput" placeholder="e.g. bicycle, camera, gold coins">
+    <input id="wantInput" placeholder="e.g. bicycle, camera, plumbing">
     <p class="field-help">Leave blank if you have no preference — this will not limit your matches.</p>
     <label for="haveInput">I HAVE TO TRADE</label>
-    <input id="haveInput" placeholder="e.g. comic books, tools">
+    <input id="haveInput" placeholder="e.g. comic books, tools, lessons">
+    <label for="categoryInput">BROWSE CATEGORY</label>
+    <select id="categoryInput" class="field-select" aria-label="Browse category">
+      <option value="all" selected>All categories</option>
+      <option value="item">Items</option>
+      <option value="service">Services</option>
+      <option value="skill">Skills</option>
+      <option value="experience">Experiences</option>
+      <option value="space">Space / Accommodation</option>
+      <option value="other">Other</option>
+    </select>
+    <p class="field-help">Category filters what you see. Matches can come from any category.</p>
     <label for="locationInput">LOCATION</label>
     <input id="locationInput" placeholder="Enter city or ZIP code">
     <label for="distanceInput">DISTANCE</label>
@@ -34,31 +45,39 @@
     </select>
     <button class="plain-button primary full" id="findMatches">Find my matches</button>
     </section>
-  
   </aside>
-  <section class="post-panel">
-      <h2>TO POST YOUR ITEM</h2>
-      <p class="intro">Have something to trade? Add your offer.</p>
-      <label for="postTitle">ITEM TITLE</label>
-      <input id="postTitle" placeholder="e.g. Mountain bike">
-      <label for="postHave">I HAVE</label>
-      <textarea id="postHave" rows="2" placeholder="Describe what you have"></textarea>
-      <label for="postWant">I WANT</label>
-      <textarea id="postWant" rows="2" placeholder="Optional — leave blank if you are open to any offer"></textarea>
-      <p class="field-help">Leave this blank to accept offers for anything. Your item can then match regardless of what the other person wants in return.</p>
-      <label for="postLocation">LOCATION</label>
-      <input id="postLocation" placeholder="City or ZIP code">
-      <label for="postPhotos">PHOTOS</label>
-      <input id="postPhotos" class="photo-input" type="file" accept="image/*" multiple>
-      <button class="plain-button primary full" type="button" data-login>Log in to post item</button>
-      <p class="post-note">Posting will be enabled after account registration is connected.</p>
-    </section>
-    <section class="matches-panel" id="matches">
+  <section class="matches-panel" id="matches">
     <div class="matches-heading">
       <div><h2>MATCHING OFFERS</h2><p id="matchCaption">All available offers · closest to New York City first</p></div>
       <span class="count" id="matchCount">0 offers</span>
     </div>
     <div id="matchList" class="listing-list"></div>
+  </section>
+  <section class="post-panel">
+      <h2>TO POST YOUR OFFER</h2>
+      <p class="intro">Have an item, service, skill, or something else to exchange? Add your offer.</p>
+      <label for="postTitle">OFFER TITLE</label>
+      <input id="postTitle" placeholder="e.g. Mountain bike or plumbing service">
+      <label for="postType">CATEGORY</label>
+      <select id="postType" class="field-select">
+        <option value="item">Item</option>
+        <option value="service">Service</option>
+        <option value="skill">Skill</option>
+        <option value="experience">Experience</option>
+        <option value="space">Space / Accommodation</option>
+        <option value="other">Other</option>
+      </select>
+      <label for="postHave">I HAVE / I OFFER</label>
+      <textarea id="postHave" rows="2" placeholder="Describe what you have or what you can offer"></textarea>
+      <label for="postWant">I WANT</label>
+      <textarea id="postWant" rows="2" placeholder="Optional — leave blank if you are open to any offer"></textarea>
+      <p class="field-help">Matching works across categories. For example, an item can match a service.</p>
+      <label for="postLocation">LOCATION</label>
+      <input id="postLocation" placeholder="City or ZIP code">
+      <label for="postPhotos">PHOTOS (OPTIONAL)</label>
+      <input id="postPhotos" class="photo-input" type="file" accept="image/*" multiple>
+      <button class="plain-button primary full" type="button" data-login>Log in to post offer</button>
+      <p class="post-note">Posting will be enabled after account registration is connected.</p>
   </section>
 </main>
 <footer><span class="footer-brand">swap<span>n</span>grab</span><span>Trade What You Have. Get What You Want.</span><span>© 2026 SwapNGrab</span></footer>
