@@ -16,7 +16,7 @@ const el=id=>document.getElementById(id),trim=id=>el(id).value.trim();
 const words=s=>s.toLowerCase().split(/[^a-z0-9]+/).filter(x=>x.length>1);
 const overlaps=(a,b)=>{const set=new Set(words(b));return words(a).some(x=>set.has(x));};
 const miles=(a,b)=>{const r=n=>n*Math.PI/180,dl=r(b.lat-a.lat),dn=r(b.lon-a.lon),h=Math.sin(dl/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dn/2)**2;return 3958.8*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h));};
-const typeName=t=>({item:"Item",service:"Service",skill:"Skill",experience:"Experience",space:"Space / Accommodation",other:"Other"}[t]||"Other");
+const typeName=t=>({item:"Things",service:"Services & Skills",skill:"Services & Skills",service_skill:"Services & Skills",space:"Rooms & Space"}[t]||"Things");
 async function geocode(q){
  const z=q.match(/^\d{5}$/);
  if(z){const r=await fetch("https://api.zippopotam.us/us/"+z[0]);if(!r.ok)throw Error("ZIP code not found");const p=(await r.json()).places?.[0];if(!p)throw Error("ZIP code not found");return {lat:+p.latitude,lon:+p.longitude,label:p["place name"]+", "+p["state abbreviation"]};}
@@ -30,7 +30,9 @@ async function render(filter=false){
  try{
   const center=filter&&q?await geocode(q):null;
   let list=products.filter(p=>{
-   if(category!=="all"&&p.type!==category)return false;
+   if(category==="item"&&p.type!=="item")return false;
+   if(category==="service_skill"&&p.type!=="service"&&p.type!=="skill")return false;
+   if(category==="space"&&p.type!=="space")return false;
    if(!center&&scope!=="nationwide"&&p.region!=="nyc"&&p.region!=="nearby")return false;
    if(center&&miles(center,{lat:p.lat,lon:p.lon})>radius)return false;
    return !filter||((!want||overlaps(want,p.have+" "+p.title+" "+p.keywords))&&(!have||!p.want.trim()||overlaps(have,p.want)));
