@@ -25,15 +25,18 @@
     <input id="haveInput" placeholder="e.g. comic books, tools, lessons">
     <label for="categoryInput">BROWSE CATEGORY</label>
     <select id="categoryInput" class="field-select" aria-label="Browse category">
-      <option value="all" selected>All categories</option>
-      <option value="item">Items</option>
-      <option value="service">Services</option>
-      <option value="skill">Skills</option>
-      <option value="experience">Experiences</option>
-      <option value="space">Space / Accommodation</option>
-      <option value="other">Other</option>
+      <option value="all" selected>ALL</option>
+      <option value="item">Things</option>
+      <option value="service_skill">Services &amp; Skills</option>
+      <option value="space">Rooms &amp; Space</option>
     </select>
-    <p class="field-help">Category filters what you see. Matches can come from any category.</p>
+    <div class="field-help category-explainer">
+      <strong>Things:</strong> Furniture, cars, electronics, clothes, tools, and more.<br>
+      <strong>Services &amp; Skills:</strong> Repairs, cleaning, plumbing, tutoring, computer help, lessons, and advice.<br>
+      <strong>Rooms &amp; Space:</strong> Rooms, parking, storage, vacation homes, and more.<br>
+      <strong>ALL:</strong> Browse every offer.
+    </div>
+    <p class="field-help">Categories help organize offers. Matches can come from any category.</p>
     <label for="locationInput">LOCATION</label>
     <input id="locationInput" placeholder="Enter city or ZIP code">
     <label for="distanceInput">DISTANCE</label>
@@ -52,18 +55,15 @@
       <input id="postTitle" placeholder="e.g. Mountain bike or plumbing service">
       <label for="postType">CATEGORY</label>
       <select id="postType" class="field-select">
-        <option value="item">Item</option>
-        <option value="service">Service</option>
-        <option value="skill">Skill</option>
-        <option value="experience">Experience</option>
-        <option value="space">Space / Accommodation</option>
-        <option value="other">Other</option>
+        <option value="item">Things</option>
+        <option value="service_skill">Services &amp; Skills</option>
+        <option value="space">Rooms &amp; Space</option>
       </select>
       <label for="postHave">I HAVE / I OFFER</label>
       <textarea id="postHave" rows="2" placeholder="Describe what you have or what you can offer"></textarea>
       <label for="postWant">I WANT</label>
       <textarea id="postWant" rows="2" placeholder="Optional — leave blank if you are open to any offer"></textarea>
-      <p class="field-help">Matching works across categories. For example, an item can match a service.</p>
+      <p class="field-help">Things include physical items. Services &amp; Skills include work, help, and knowledge. Rooms &amp; Space include places, parking, and storage. Offers can match across categories.</p>
       <label for="postLocation">LOCATION</label>
       <input id="postLocation" placeholder="City or ZIP code">
       <label for="postPhotos">PHOTOS (OPTIONAL)</label>
