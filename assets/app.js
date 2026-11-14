@@ -178,7 +178,13 @@ function setAuthMode(signup) {
 function updateAccountUI() {
   const label = currentUser ? "Log out" : "Log in / Create account";
   document.querySelectorAll("[data-login]").forEach(button=>button.textContent=label);
+  el("accountPrompt").textContent = currentUser
+    ? "Signed in as " + (currentUser.email || "SwapNGrab member")
+    : "Want to save your offers and manage your matches?";
   el("postOfferButton").textContent = currentUser ? "Post my offer" : "Log in to post offer";
+  el("postNote").textContent = currentUser
+    ? "You are signed in. Your offer will be published after you submit it."
+    : "Create an account or log in to post an offer.";
   el("postMessage").textContent = currentUser
     ? "You are signed in. Your offer will be published after you submit it."
     : "Create an account or log in to post an offer.";
