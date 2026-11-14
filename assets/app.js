@@ -204,7 +204,7 @@ el("authForm").addEventListener("submit",async event=>{
   el("authMessage").textContent=signup?"Creating account…":"Signing in…";
   try {
     const response=signup
-      ? await supabase.auth.signUp({email,password,options:{data:{display_name:trim("authDisplayName")}}})
+      ? await supabase.auth.signUp({email,password,options:{data:{display_name:trim("authDisplayName")},emailRedirectTo:"https://vitalyny1.github.io/SwapNGrab/"}})
       : await supabase.auth.signInWithPassword({email,password});
     if(response.error) throw response.error;
     if(signup && !response.data.session) {
