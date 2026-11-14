@@ -72,10 +72,16 @@
       <textarea id="postHave" rows="2" placeholder="Describe what you have or what you can offer"></textarea>
       <label for="postWant">I WANT</label>
       <textarea id="postWant" rows="2" placeholder="Optional — leave blank if you are open to any offer"></textarea>
-      <label for="postLocation">LOCATION</label>
-      <input id="postLocation" placeholder="City or ZIP code">
-      <label for="postPhotos">PHOTOS (OPTIONAL)</label>
-      <input id="postPhotos" class="photo-input" type="file" accept="image/*" multiple>
+      <div class="post-location-photos-row">
+        <div class="post-location-field">
+          <label for="postLocation">LOCATION</label>
+          <input id="postLocation" placeholder="City or ZIP code">
+        </div>
+        <div class="post-photos-field">
+          <label for="postPhotos">PHOTOS (OPTIONAL)</label>
+          <input id="postPhotos" class="photo-input" type="file" accept="image/*" multiple>
+        </div>
+      </div>
       <button class="plain-button primary full" type="button" data-login>Log in to post offer</button>
       <p class="post-note">Posting will be enabled after account registration is connected.</p>
     </section>
