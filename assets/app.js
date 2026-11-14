@@ -185,7 +185,7 @@ function updateAccountUI() {
   el("postNote").textContent = currentUser
     ? "You are signed in. Your offer will be published after you submit it."
     : "Create an account or log in to post an offer.";
-  el("postMessage").textContent = currentUser
+  el("postNote").textContent = currentUser
     ? "You are signed in. Your offer will be published after you submit it."
     : "Create an account or log in to post an offer.";
 }
@@ -229,10 +229,10 @@ el("authForm").addEventListener("submit",async event=>{
 async function postOffer() {
   if(!currentUser){openAuth();return;}
   const title=trim("postTitle"),have=trim("postHave"),want=trim("postWant"),location=trim("postLocation");
-  if(!title||!have){el("postMessage").textContent="Please enter an offer title and what you have or can offer.";return;}
+  if(!title||!have){el("postNote").textContent="Please enter an offer title and what you have or can offer.";return;}
   const button=el("postOfferButton");
   button.disabled=true;
-  el("postMessage").textContent="Saving your offer…";
+  el("postNote").textContent="Saving your offer…";
   try {
     let place=null;
     if(location){try{place=await geocode(location);}catch(_){place={city:location,region:"",postal_code:"",lat:null,lon:null};}}
@@ -264,10 +264,10 @@ async function postOffer() {
     }
     ["postTitle","postHave","postWant","postLocation"].forEach(id=>el(id).value="");
     el("postPhotos").value="";
-    el("postMessage").textContent="Your offer is now posted.";
+    el("postNote").textContent="Your offer is now posted.";
     await loadListings();
   } catch(error) {
-    el("postMessage").textContent="Could not post offer: "+(error.message || "Please try again.");
+    el("postNote").textContent="Could not post offer: "+(error.message || "Please try again.");
   } finally {button.disabled=false;}
 }
 el("postOfferButton").addEventListener("click",postOffer);
