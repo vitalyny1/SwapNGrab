@@ -169,7 +169,7 @@ function renderListings(applySearch) {
     // exclude listings when their coordinates are known.
     if (locationCenter && item.latitude != null && item.longitude != null &&
         miles(locationCenter,{lat:item.latitude,lon:item.longitude}) > radius) return false;
-    if (applySearch && want && !overlaps(want,[item.title,item.have_text,(item.keywords||[]).join(" ")].join(" "))) return false;
+    if (applySearch && want && !overlaps(want,[item.have_text,(item.keywords||[]).join(" ")].join(" "))) return false;
     if (applySearch && have && item.want_text && !overlaps(have,item.want_text)) return false;
     return true;
   });
@@ -306,7 +306,6 @@ async function postOffer() {
   if(!currentUser){openAuth();return;}
   const have=trim("postHave"),want=trim("postWant"),location=trim("postLocation");
   if(!have){el("postNote").textContent="Please describe what you have or can offer.";return;}
-  const title=have.length>100 ? have.slice(0,97).trimEnd()+"..." : have;
   const button=el("postOfferButton");
   button.disabled=true;
   el("postNote").textContent="Saving your offer…";
@@ -315,7 +314,6 @@ async function postOffer() {
     if(location){try{place=await geocode(location);}catch(_){place={city:location,region:"",postal_code:"",lat:null,lon:null};}}
     const payload={
       owner_id:currentUser.id,
-      title,
       listing_type:el("postType").value,
       have_text:have,
       want_text:want || null,
