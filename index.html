@@ -15,48 +15,28 @@
     <button class="login-link" data-login>log in / sign up</button>
   </div>
 </header>
-<main class="market">
-  <aside class="filters" id="dashboard">
-    <h2>your swap desk</h2>
-    <div class="side-section account-mini"><p>Sign in to manage your offers and see matches selected for you.</p><button class="plain-button" data-login>log in / create account</button></div>
-    <div class="side-section">
-      <h3>what are you looking for?</h3>
-      <label for="wantInput">I WANT</label>
-      <input id="wantInput" placeholder="bicycle, camera, coins..." value="bicycle">
-      <label for="haveInput">I HAVE TO TRADE</label>
-      <input id="haveInput" placeholder="comic books, tools...">
-      <label for="keywordsInput">OTHER KEYWORDS</label>
-      <input id="keywordsInput" placeholder="brand, model, details">
-      <button class="plain-button primary" id="findMatches">find my matches</button>
-    </div>
-    <div class="side-section">
-      <h3>browse swaps</h3>
-      <a href="#matches">matching offers <span id="sideMatchCount">•</span></a>
-      <a href="#browse">all recent offers</a>
-      <a href="#how">how swapping works</a>
-    </div>
-    <div class="side-section">
-      <h3>refine matches</h3>
-      <label class="check"><input type="checkbox"> search titles only</label>
-      <label class="check"><input type="checkbox"> has photo</label>
-      <label class="check"><input type="checkbox"> posted recently</label>
-      <label for="distance">distance</label><input id="distance" placeholder="any distance">
-      <label for="location">location / ZIP</label><input id="location" placeholder="city or ZIP code">
+<main class="two-panel">
+  <aside class="want-panel">
+    <h1>WHAT ARE YOU LOOKING FOR?</h1>
+    <p class="intro">Tell us what you want and what you can trade.</p>
+    <label for="wantInput">I WANT</label>
+    <input id="wantInput" placeholder="e.g. bicycle, camera, gold coins" value="bicycle">
+    <label for="haveInput">I HAVE TO TRADE</label>
+    <input id="haveInput" placeholder="e.g. comic books, tools">
+    <label for="keywordsInput">OTHER KEYWORDS (optional)</label>
+    <input id="keywordsInput" placeholder="brands, model, details">
+    <button class="plain-button primary full" id="findMatches">Find my matches</button>
+    <div class="account-note">
+      <p>Want to save your offers and manage your matches?</p>
+      <button class="plain-button full" data-login>Log in / Create account</button>
     </div>
   </aside>
-  <section class="results-area">
-    <div class="search-row"><input aria-label="Search swaps" placeholder="search swap offers"><button aria-label="Search">⌕</button></div>
-    <div class="toolbar">
-      <div class="view-tabs"><button class="active" title="List view">☷</button><button title="Grid view">▦</button></div>
-      <select aria-label="Sort offers"><option>newest</option><option>closest</option><option>best match</option></select>
-      <button class="filter-chip">have / want</button><button class="filter-chip">location</button><button class="filter-chip">value</button>
-      <button class="post-button" data-login>＋ post an offer</button>
+  <section class="matches-panel" id="matches">
+    <div class="matches-heading">
+      <div><h2>MATCHING OFFERS</h2><p id="matchCaption">Offers that may have what you're looking for</p></div>
+      <span class="count" id="matchCount">0 matches</span>
     </div>
-    <div class="results-title" id="matches"><div><h1>matching swap offers</h1><p id="matchCaption">Offers that may have what you're looking for</p></div><span class="count" id="matchCount">0 matches</span></div>
     <div id="matchList" class="listing-list"></div>
-    <div class="results-title recent-title" id="browse"><div><h2>recent offers</h2><p>More things available to trade</p></div><a href="#browse">view all</a></div>
-    <div id="recentList" class="listing-list"></div>
-    <section class="how" id="how"><h2>how SwapNGrab works</h2><p>List what you have, tell us what you want, and find someone interested in making a trade.</p></section>
   </section>
 </main>
 <footer><span class="footer-brand">swap<span>n</span>grab</span><span>Trade What You Have. Get What You Want.</span><span>© 2026 SwapNGrab</span></footer>
