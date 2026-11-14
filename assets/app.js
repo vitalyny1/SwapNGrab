@@ -119,15 +119,19 @@ function renderListings(applySearch) {
   let list = currentListings.filter(item => {
     if (currentUser && item.owner_id === currentUser.id) return false;
     if (category !== "all" && item.listing_type !== category) return false;
+    // Keep offers with unknown locations in the results; distance can only
+    // exclude listings when their coordinates are known.
     if (locationCenter && item.latitude != null && item.longitude != null &&
         miles(locationCenter,{lat:item.latitude,lon:item.longitude}) > radius) return false;
-    if (locationCenter && (item.latitude == null || item.longitude == null)) return false;
     if (applySearch && want && !overlaps(want,[item.title,item.have_text,(item.keywords||[]).join(" ")].join(" "))) return false;
     if (applySearch && have && item.want_text && !overlaps(have,item.want_text)) return false;
     return true;
   });
   if (locationCenter) {
-    list.sort((a,b)=>miles(locationCenter,{lat:a.latitude,lon:a.longitude})-miles(locationCenter,{lat:b.latitude,lon:b.longitude}));
+    const distanceFor = item => item.latitude != null && item.longitude != null
+      ? miles(locationCenter,{lat:item.latitude,lon:item.longitude})
+      : Infinity;
+    list.sort((a,b)=>distanceFor(a)-distanceFor(b));
   }
   el("matchList").innerHTML = list.length
     ? list.map(listingCard).join("")
