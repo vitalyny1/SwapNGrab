@@ -10,19 +10,39 @@ const products=[
 {title:"Gold and silver coin set",emoji:"🪙",have:"Small collection of collectible coins.",want:"Vintage comics, camera, or musical instrument.",where:"Connecticut",region:"nearby",rank:8,keywords:"coins gold silver"}
 ];
 const el=id=>document.getElementById(id);
+const trimValue=id=>el(id).value.trim();
+const words=value=>value.toLowerCase().split(/[^a-z0-9]+/).filter(w=>w.length>1);
+const overlaps=(wanted,available)=>{const a=words(wanted),b=new Set(words(available));return a.some(word=>b.has(word));};
 function makeListing(p){return '<article class="listing"><div class="thumb">'+p.emoji+'</div><div><h3>'+p.title+'</h3><p><b>Have:</b> '+p.have+'</p><p><b>Want:</b> '+p.want+'</p><div class="meta">⌖ '+p.where+' · Sample listing</div></div></article>'}
-function renderMatches(filter=false){
+function renderMatches(applyFilters=false){
  const location=el("browseLocation").value;
- const q=(el("wantInput").value+" "+el("keywordsInput").value).toLowerCase().trim();
- const terms=q.split(/[^a-z0-9]+/).filter(w=>w.length>2);
- let results=products.filter(p=>(location==="nationwide"||p.region==="nyc"||p.region==="nearby")&&(!filter||!terms.length||(p.title+" "+p.have+" "+p.want+" "+p.keywords).toLowerCase().split(/[^a-z0-9]+/).some(word=>terms.some(t=>word.includes(t)))));
+ const userWants=trimValue("wantInput");
+ const userHas=trimValue("haveInput");
+ const extra=trimValue("keywordsInput");
+ const wantCriteria=[userWants,extra].filter(v=>v!=="").join(" ");
+ let results=products.filter(p=>{
+   if(location!=="nationwide"&&p.region!=="nyc"&&p.region!=="nearby")return false;
+   if(!applyFilters)return true;
+   // Only enforce a reciprocal direction when the corresponding user field is nonblank after trimming.
+   const theirHaveMatches=!wantCriteria||overlaps(wantCriteria,p.have+" "+p.title+" "+p.keywords);
+   const theirWantMatches=!userHas||overlaps(userHas,p.want);
+   return theirHaveMatches&&theirWantMatches;
+ });
  results.sort((a,b)=>a.rank-b.rank);
- el("matchList").innerHTML=results.length?results.map(makeListing).join(""):'<p class="empty-state">No offers match those keywords. Try a broader search.</p>';
+ el("matchList").innerHTML=results.length?results.map(makeListing).join(""):'<p class="empty-state">No reciprocal matches found. Try different keywords or leave one side blank to broaden your results.</p>';
  el("matchCount").textContent=results.length+" available offer"+(results.length===1?"":"s");
- el("matchCaption").textContent=filter&&terms.length?'Filtered by what you want: '+(el("wantInput").value||el("keywordsInput").value):location==="nyc"?"All available offers · closest to New York City first":"All available offers · regional order";
+ if(!applyFilters||(!userWants&&!userHas&&!extra)){
+   el("matchCaption").textContent=location==="nyc"?"All available offers · closest to New York City first":"All available offers · regional order";
+ }else{
+   const directions=[];
+   if(wantCriteria)directions.push("their HAVE matches your WANT");
+   if(userHas)directions.push("their WANT matches your HAVE");
+   el("matchCaption").textContent="Reciprocal results · "+directions.join(" · ");
+ }
 }
 el("findMatches").addEventListener("click",()=>renderMatches(true));
 el("wantInput").addEventListener("keydown",e=>{if(e.key==="Enter")renderMatches(true)});
+el("haveInput").addEventListener("keydown",e=>{if(e.key==="Enter")renderMatches(true)});
 el("keywordsInput").addEventListener("keydown",e=>{if(e.key==="Enter")renderMatches(true)});
 el("browseLocation").addEventListener("change",()=>renderMatches(false));
 renderMatches(false);
