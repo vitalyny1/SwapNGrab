@@ -43,3 +43,13 @@ footer{display:flex;gap:18px;align-items:center;border-top:1px solid #ccc;backgr
 .category-tag{display:inline-block;font-size:11px;color:#333;background:#eef3f8;border:1px solid #c7d5e2;padding:3px 7px;margin:0 0 5px;border-radius:2px}
 .post-panel .field-select{display:block}
 @media(max-width:700px){.want-panel{padding:0}}
+
+/* Keep the left search/post column the same height as MATCHING OFFERS. */
+@media(min-width:701px){
+  .two-panel{align-items:stretch}
+  .want-panel{min-height:0;height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-gutter:stable}
+}
+@media(max-width:700px){
+  .two-panel{align-items:start}
+  .want-panel{height:auto;max-height:none;overflow:visible}
+}
