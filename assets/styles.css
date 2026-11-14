@@ -78,3 +78,11 @@ footer{display:flex;gap:18px;align-items:center;border-top:1px solid #ccc;backgr
 .location-distance-row input,.location-distance-row select{width:100%;min-width:0}
 
 .category-menu-note{margin:0;padding:9px;background:#f7f7f7;border-top:1px solid #ddd;font-size:11px;line-height:1.4;color:#555}
+
+/* Posting form: location and optional photos share one row. */
+.post-location-photos-row{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:10px;align-items:end}
+.post-location-photos-row>div{min-width:0}
+.post-location-photos-row label{margin-top:13px}
+.post-location-photos-row input{width:100%;min-width:0}
+.post-location-photos-row .photo-input{height:36px;padding:7px 0}
+@media(max-width:420px){.post-location-photos-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px}.post-location-photos-row .photo-input{font-size:10px}}
