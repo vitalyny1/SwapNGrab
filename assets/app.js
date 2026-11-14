@@ -258,8 +258,9 @@ el("authForm").addEventListener("submit",async event=>{
 
 async function postOffer() {
   if(!currentUser){openAuth();return;}
-  const title=trim("postTitle"),have=trim("postHave"),want=trim("postWant"),location=trim("postLocation");
-  if(!title||!have){el("postNote").textContent="Please enter an offer title and what you have or can offer.";return;}
+  const have=trim("postHave"),want=trim("postWant"),location=trim("postLocation");
+  if(!have){el("postNote").textContent="Please describe what you have or can offer.";return;}
+  const title=have.length>100 ? have.slice(0,97).trimEnd()+"..." : have;
   const button=el("postOfferButton");
   button.disabled=true;
   el("postNote").textContent="Saving your offer…";
@@ -292,7 +293,7 @@ async function postOffer() {
       const imageRow=await supabase.from("listing_images").insert({listing_id:data.id,owner_id:currentUser.id,storage_path:path});
       if(imageRow.error)throw imageRow.error;
     }
-    ["postTitle","postHave","postWant","postLocation"].forEach(id=>el(id).value="");
+    ["postHave","postWant","postLocation"].forEach(id=>el(id).value="");
     el("postPhotos").value="";
     el("postNote").textContent="Your offer is now posted.";
     await loadListings();
