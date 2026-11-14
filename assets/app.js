@@ -20,7 +20,7 @@ async function geocode(q){
  if(!r.ok)throw Error("Could not look up that location");const hits=((await r.json()).results||[]).filter(x=>x.country_code==="US");if(!hits.length)throw Error("City not found. Try a US city or ZIP code.");
  const st=parts[1]?.trim().toLowerCase(),p=(st&&hits.find(x=>(x.admin1||"").toLowerCase().includes(st)))||hits[0];return {lat:p.latitude,lon:p.longitude,label:p.name+(p.admin1?", "+p.admin1:"")};
 }
-function card(p){return '<article class="listing"><div class="thumb">'+p.emoji+'</div><div><h3>'+p.title+'</h3><p><b>Have:</b> '+p.have+'</p><p><b>Want:</b> '+p.want+'</p><div class="meta">⌖ '+p.where+' · Sample listing</div></div></article>';}
+function card(p){return '<article class="listing"><div class="thumb">'+p.emoji+'</div><div><h3>'+p.title+'</h3><p><b>Have:</b> '+p.have+'</p><p><b>Want:</b> '+p.want+'</p><div class="meta">⌖ '+p.where+' · Sample listing</div><button class="contact-link" type="button" data-contact="'+p.title.replace(/"/g,'&quot;')+'">Contact owner</button></div></article>';}
 async function render(filter=false){
  const scope=el("browseLocation").value,want=trim("wantInput"),have=trim("haveInput"),q=trim("locationInput"),radius=+el("distanceInput").value,btn=el("findMatches");btn.disabled=true;
  try{
@@ -42,4 +42,13 @@ el("findMatches").addEventListener("click",()=>render(true));
 el("browseLocation").addEventListener("change",()=>render(false));render(false);
 document.querySelectorAll("[data-login]").forEach(b=>b.addEventListener("click",()=>el("loginDialog").showModal()));
 el("loginDialog").querySelector("form").addEventListener("submit",e=>{e.preventDefault();el("loginDialog").close()});
+const contactDialog=el("contactDialog");
+el("matchList").addEventListener("click",e=>{
+ const button=e.target.closest("[data-contact]");
+ if(!button)return;
+ el("contactListingTitle").textContent="Regarding: "+button.dataset.contact;
+ contactDialog.showModal();
+});
+el("closeContact").addEventListener("click",()=>contactDialog.close());
+el("contactForm").addEventListener("submit",e=>e.preventDefault());
 })();
