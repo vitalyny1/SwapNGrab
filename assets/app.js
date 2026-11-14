@@ -22,7 +22,7 @@ async function geocode(q){
 }
 function card(p){return '<article class="listing"><div class="thumb">'+p.emoji+'</div><div><h3>'+p.title+'</h3><p><b>Have:</b> '+p.have+'</p><p><b>Want:</b> '+p.want+'</p><div class="meta">⌖ '+p.where+' · Sample listing</div><button class="contact-link" type="button" data-contact="'+p.title.replace(/"/g,'&quot;')+'">Contact owner</button></div></article>';}
 async function render(filter=false){
- const scope=el("browseLocation").value,want=trim("wantInput"),have=trim("haveInput"),q=trim("locationInput"),radius=+el("distanceInput").value,btn=el("findMatches");btn.disabled=true;
+ const scope="nyc",want=trim("wantInput"),have=trim("haveInput"),q=trim("locationInput"),radius=+el("distanceInput").value,btn=el("findMatches");btn.disabled=true;
  try{
   const center=filter&&q?await geocode(q):null;
   let list=products.filter(p=>{
@@ -39,7 +39,7 @@ async function render(filter=false){
 }
 el("findMatches").addEventListener("click",()=>render(true));
 ["wantInput","haveInput","locationInput"].forEach(id=>el(id).addEventListener("keydown",e=>{if(e.key==="Enter")render(true)}));
-el("browseLocation").addEventListener("change",()=>render(false));render(false);
+render(false);
 document.querySelectorAll("[data-login]").forEach(b=>b.addEventListener("click",()=>el("loginDialog").showModal()));
 el("loginDialog").querySelector("form").addEventListener("submit",e=>{e.preventDefault();el("loginDialog").close()});
 const contactDialog=el("contactDialog");
