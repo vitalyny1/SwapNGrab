@@ -31,6 +31,9 @@ create table if not exists public.listings (
   id uuid primary key default extensions.gen_random_uuid(),
   owner_id uuid not null references public.profiles(id) on delete cascade,
   title text not null,
+  -- Category organizes browsing; it does not restrict cross-category matching.
+  listing_type text not null default 'item'
+    check (listing_type in ('item', 'service', 'skill', 'experience', 'space', 'other')),
   description text,
   have_text text not null,
   -- NULL/blank WANT means the owner is open to any offer.
