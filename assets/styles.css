@@ -38,3 +38,5 @@ footer{display:flex;gap:18px;align-items:center;border-top:1px solid #ccc;backgr
 
 .header-account{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13px}.header-account .login-link{font-size:14px;text-decoration:underline}.account-note{display:none}
 @media(max-width:700px){.topbar{height:auto;align-items:flex-start;flex-wrap:wrap}.header-account{margin-left:0;width:100%;justify-content:flex-end;flex-wrap:wrap;gap:5px 12px}.header-account span{font-size:12px}}
+
+.field-help{font-size:11px;color:#555;line-height:1.4;margin:5px 0 0}.search-panel .field-help{margin-top:5px}
