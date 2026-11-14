@@ -16,9 +16,8 @@
     <button class="login-link" data-login>Log in / Create account</button>
   </div>
 </header>
-<main class="two-panel">
-  <aside class="want-panel">
-    <section class="search-panel">
+<main class="two-panel" id="fourPanelLayout">
+    <section class="search-panel grid-search">
     <h1>WHAT ARE YOU LOOKING FOR?</h1>
     <p class="intro">Tell us what you want and what you can trade.</p>
     <label for="wantInput">I WANT</label>
@@ -56,8 +55,7 @@
       </div>
     </div>
     <button class="plain-button primary full" id="findMatches">Find my matches</button>
-    </section>
-    <section class="post-panel">
+    <section class="post-panel grid-post">
       <h2>TO POST YOUR OFFER</h2>
       <p class="intro">Have an item, service, skill, or something else to exchange? Add your offer.</p>
       <label for="postType">CATEGORY</label>
@@ -83,23 +81,22 @@
       <button class="plain-button primary full" type="button" id="postOfferButton">Log in to post offer</button>
       <p class="post-note" id="postNote">Create an account or log in to post an offer.</p>
     </section>
-  </aside>
-  <div class="right-column">
-  <section class="matches-panel" id="matches">
+  <section class="matches-panel grid-matches" id="matches">
     <div class="matches-heading">
       <div><h2>MATCHING OFFERS</h2><p id="matchCaption">All available offers · closest to New York City first</p></div>
       <span class="count" id="matchCount">0 offers</span>
     </div>
     <div id="matchList" class="listing-list"></div>
-  </section>
-  <section class="my-offers-panel" id="myOffersPanel" hidden>
+  <section class="my-offers-panel grid-mine" id="myOffersPanel" hidden>
     <div class="matches-heading">
       <div><h2>MY OFFERS</h2><p>Your listings, separate from search results.</p></div>
       <span class="count" id="myOfferCount">0 offers</span>
     </div>
     <div id="myOfferList" class="listing-list"></div>
   </section>
-  </div>
+  <div class="layout-splitter vertical-splitter" id="verticalSplitter" role="separator" aria-label="Resize left and right panels" aria-orientation="vertical" tabindex="0"></div>
+  <div class="layout-splitter horizontal-splitter" id="horizontalSplitter" role="separator" aria-label="Resize top and bottom panels" aria-orientation="horizontal" tabindex="0"></div>
+  <div class="splitter-cross" aria-hidden="true"></div>
 </main>
 <footer><span>© 2026 SwapNGrab</span></footer>
 <dialog id="loginDialog"><form class="login-box" id="authForm"><button type="button" class="close" id="closeAuth" aria-label="Close">×</button><h2 id="authTitle">Log in to SwapNGrab</h2><p id="authIntro">Sign in to manage your offers.</p><label id="displayNameWrap" hidden>Your name<input id="authDisplayName" type="text" autocomplete="name" placeholder="Your name"></label><label>Email<input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required></label><label>Password<input id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters" required></label><button class="plain-button primary full" id="authSubmit" type="submit">Log in</button><p id="authMessage" role="status"></p><button class="login-link" id="authModeToggle" type="button">Create a new account</button><small>By creating an account, you agree to use SwapNGrab responsibly.</small></form></dialog>
