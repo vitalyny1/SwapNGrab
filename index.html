@@ -24,17 +24,22 @@
     <label for="haveInput">I HAVE TO TRADE</label>
     <input id="haveInput" placeholder="e.g. comic books, tools, lessons">
     <label for="categoryInput">BROWSE CATEGORY</label>
-    <select id="categoryInput" class="field-select" aria-label="Browse category">
-      <option value="all" selected>ALL</option>
-      <option value="item">Things</option>
-      <option value="service_skill">Services &amp; Skills</option>
-      <option value="space">Rooms &amp; Space</option>
-    </select>
-    <div class="category-descriptions">
-      <div><strong>Things</strong> — Furniture, cars, electronics, clothes.</div>
-      <div><strong>Services &amp; Skills</strong> — Repairs, lessons, computer help.</div>
-      <div><strong>Rooms &amp; Space</strong> — Rooms, parking, storage.</div>
-      <div><strong>ALL</strong> — Browse every offer.</div>
+    <div class="category-picker" id="categoryPicker">
+      <button type="button" class="category-picker-toggle" id="categoryPickerToggle" aria-haspopup="listbox" aria-expanded="false">
+        <span id="categoryPickerLabel">ALL — Browse every offer.</span><span aria-hidden="true">▾</span>
+      </button>
+      <div class="category-picker-menu" id="categoryPickerMenu" role="listbox" aria-label="Browse category" hidden>
+        <button type="button" class="category-option selected" role="option" aria-selected="true" data-value="all"><strong>ALL</strong><span>Browse every offer.</span></button>
+        <button type="button" class="category-option" role="option" aria-selected="false" data-value="item"><strong>Things</strong><span>Furniture, cars, electronics, clothes.</span></button>
+        <button type="button" class="category-option" role="option" aria-selected="false" data-value="service_skill"><strong>Services &amp; Skills</strong><span>Repairs, lessons, computer help.</span></button>
+        <button type="button" class="category-option" role="option" aria-selected="false" data-value="space"><strong>Rooms &amp; Space</strong><span>Rooms, parking, storage.</span></button>
+      </div>
+      <select id="categoryInput" class="category-value" aria-label="Browse category" tabindex="-1">
+        <option value="all" selected>ALL</option>
+        <option value="item">Things</option>
+        <option value="service_skill">Services &amp; Skills</option>
+        <option value="space">Rooms &amp; Space</option>
+      </select>
     </div>
     <label for="locationInput">LOCATION</label>
     <input id="locationInput" placeholder="Enter city or ZIP code">
