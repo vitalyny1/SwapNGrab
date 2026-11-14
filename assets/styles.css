@@ -44,46 +44,29 @@ footer{display:flex;gap:18px;align-items:center;border-top:1px solid #ccc;backgr
 .post-panel .field-select{display:block}
 @media(max-width:700px){.want-panel{padding:0}}
 
-/* Keep the left search/post column the same height as MATCHING OFFERS. */
+/* Make the two left-hand boxes together match the full height of MATCHING OFFERS. */
 @media(min-width:701px){
-  .two-panel{align-items:stretch}
-  .want-panel{min-height:0;height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-gutter:stable}
-}
-@media(max-width:700px){
-  .two-panel{align-items:start}
-  .want-panel{height:auto;max-height:none;overflow:visible}
-}
-
-/* The offers panel follows the left column height; only its results list scrolls. */
-@media(min-width:701px){
-  .two-panel{height: min(760px, calc(100vh - 145px));min-height:0;align-items:stretch}
-  .want-panel{height:auto;min-height:0;overflow:visible}
-  .matches-panel{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .two-panel{height:min(760px,calc(100vh - 145px));min-height:0;align-items:stretch}
+  .want-panel{
+    height:100%;min-height:0;min-width:0;
+    display:grid;grid-template-rows:minmax(0,1fr) minmax(0,1fr);
+    gap:14px;overflow:hidden;
+  }
+  .search-panel,.post-panel{
+    min-height:0;height:100%;margin:0;
+    overflow-y:auto;overflow-x:hidden;
+  }
+  .matches-panel{
+    height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;
+  }
   .matches-heading{flex:0 0 auto}
   .listing-list{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
 }
 @media(max-width:700px){
-  .two-panel{height:auto;min-height:0}
+  .two-panel{height:auto;min-height:0;align-items:start}
+  .want-panel{height:auto;max-height:none;display:block;overflow:visible}
+  .search-panel,.post-panel{height:auto;min-height:0;overflow:visible}
+  .post-panel{margin-top:20px}
   .matches-panel{height:auto;max-height:65vh;display:flex;flex-direction:column;overflow:hidden}
   .listing-list{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden}
 }
-
-
-/* Custom category dropdown with each category explanation shown in the menu. */
-.category-picker{position:relative;width:100%}
-.category-picker-toggle{width:100%;height:38px;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;border:1px solid #aaa;border-radius:2px;background:#fff;color:#222;padding:7px 9px;font:14px Arial;cursor:pointer}
-.category-picker-menu{position:absolute;z-index:20;top:calc(100% + 2px);left:0;right:0;background:#fff;border:1px solid #999;box-shadow:0 3px 8px #0002}
-.category-picker-menu[hidden]{display:none}
-.category-option{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:100%;padding:9px;background:#fff;border:0;border-bottom:1px solid #e2e2e2;text-align:left;font:13px Arial;color:#222;cursor:pointer}
-.category-option:last-child{border-bottom:0}
-.category-option:hover,.category-option.selected{background:#f0f3f7}
-.category-option strong{font-size:13px}
-.category-option span{font-size:11px;color:#555}
-.category-value{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
-
-
-/* Brand name and tagline are grouped together in the header. */
-.brand-block{display:flex;flex-direction:column;align-items:flex-start;gap:3px;white-space:nowrap}
-.brand-tagline{font-size:11px;color:#444;margin-left:27px}
-@media(max-width:700px){.brand-block{gap:2px}.brand-tagline{font-size:10px;margin-left:27px}}
-footer{justify-content:flex-end}
