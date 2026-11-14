@@ -100,3 +100,17 @@ footer{display:flex;gap:18px;align-items:center;border-top:1px solid #ccc;backgr
 /* Keep the offer action above panel content and reliably clickable. */
 #postOfferButton{position:relative;z-index:2;pointer-events:auto;cursor:pointer}
 #postOfferButton:disabled{opacity:.65;cursor:wait}
+
+/* Separate personal offers from the public matching results. */
+.right-column{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0;height:100%}
+.my-offers-panel{border:1px solid #aaa;background:#fff;min-height:0;overflow:hidden;flex:0 0 auto}
+.my-offers-panel[hidden]{display:none}
+.my-offers-panel .matches-heading{padding:10px 14px}
+.my-offers-panel .matches-heading h2{font-size:17px}
+.my-offers-panel .listing-list{max-height:190px;overflow-y:auto}
+.right-column .matches-panel{flex:1 1 auto;min-height:0}
+@media(max-width:700px){
+  .right-column{height:auto;min-height:0}
+  .right-column .matches-panel{flex:0 0 auto}
+  .my-offers-panel .listing-list{max-height:180px}
+}
