@@ -44,3 +44,6 @@ footer{display:flex;gap:18px;align-items:center;border-top:1px solid #ccc;backgr
 /* Make the search section visibly independent, matching the post-item box. */
 .search-panel{display:block;border:2px solid #888!important;background:#fafafa;padding:16px 14px;margin:0 0 20px;border-radius:2px;}
 .post-panel{border:2px solid #888!important;}
+
+/* Post form is an independent section below the search and results panels. */
+.two-panel>.post-panel{grid-column:1/-1;margin-top:0;border:2px solid #888;background:#fafafa;padding:16px;border-radius:2px;}
