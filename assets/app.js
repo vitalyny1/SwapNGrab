@@ -28,7 +28,7 @@ async function render(filter=false){
   let list=products.filter(p=>{
    if(!center&&scope!=="nationwide"&&p.region!=="nyc"&&p.region!=="nearby")return false;
    if(center&&miles(center,{lat:p.lat,lon:p.lon})>radius)return false;
-   return !filter||((!want||overlaps(want,p.have+" "+p.title+" "+p.keywords))&&(!have||overlaps(have,p.want)));
+   return !filter||((!want||overlaps(want,p.have+" "+p.title+" "+p.keywords))&&(!have||!p.want.trim()||overlaps(have,p.want)));
   });
   list.sort((a,b)=>center?miles(center,{lat:a.lat,lon:a.lon})-miles(center,{lat:b.lat,lon:b.lon}):a.rank-b.rank);
   el("matchList").innerHTML=list.length?list.map(card).join(""):'<p class="empty-state">No matching offers found. Try a larger distance or different search terms.</p>';
