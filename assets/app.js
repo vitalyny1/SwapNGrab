@@ -51,6 +51,53 @@ const miles = (a,b) => {
   return 3958.8*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h));
 };
 
+
+
+// Drag either divider to resize the four desktop panels.
+(function enablePanelResizing(){
+  const layout=el("fourPanelLayout");
+  const vertical=el("verticalSplitter");
+  const horizontal=el("horizontalSplitter");
+  if(!layout||!vertical||!horizontal)return;
+  function startDrag(handle,axis,event){
+    if(event.button!==0 && event.pointerType!=="touch")return;
+    event.preventDefault();
+    const rect=layout.getBoundingClientRect();
+    handle.setPointerCapture(event.pointerId);
+    const move=moveEvent=>{
+      if(axis==="x"){
+        const pct=(moveEvent.clientX-rect.left)/rect.width*100;
+        layout.style.setProperty("--left-pane",Math.max(22,Math.min(55,pct))+"%");
+      }else{
+        const pct=(moveEvent.clientY-rect.top)/rect.height*100;
+        layout.style.setProperty("--top-pane",Math.max(30,Math.min(78,pct))+"%");
+      }
+    };
+    const stop=()=>{
+      handle.removeEventListener("pointermove",move);
+      handle.removeEventListener("pointerup",stop);
+      handle.removeEventListener("pointercancel",stop);
+    };
+    handle.addEventListener("pointermove",move);
+    handle.addEventListener("pointerup",stop);
+    handle.addEventListener("pointercancel",stop);
+  }
+  vertical.addEventListener("pointerdown",event=>startDrag(vertical,"x",event));
+  horizontal.addEventListener("pointerdown",event=>startDrag(horizontal,"y",event));
+  vertical.addEventListener("keydown",event=>{
+    if(event.key!=="ArrowLeft"&&event.key!=="ArrowRight")return;
+    event.preventDefault();
+    const current=parseFloat(getComputedStyle(layout).getPropertyValue("--left-pane"))||32;
+    layout.style.setProperty("--left-pane",Math.max(22,Math.min(55,current+(event.key==="ArrowRight"?2:-2)))+"%");
+  });
+  horizontal.addEventListener("keydown",event=>{
+    if(event.key!=="ArrowUp"&&event.key!=="ArrowDown")return;
+    event.preventDefault();
+    const current=parseFloat(getComputedStyle(layout).getPropertyValue("--top-pane"))||62;
+    layout.style.setProperty("--top-pane",Math.max(30,Math.min(78,current+(event.key==="ArrowDown"?2:-2)))+"%");
+  });
+})();
+
 function listingCard(item) {
   const imagePath = item.listing_images?.[0]?.storage_path;
   const imageUrl = imagePath ? supabase.storage.from("listing-photos").getPublicUrl(imagePath).data.publicUrl : "";
