@@ -37,4 +37,4 @@ In Supabase, open **Project Settings → API** (or **API Keys**, depending on th
 
 These are intended for browser use when Row Level Security is enabled. **Never share or put the service_role/secret key in website code, GitHub, or a chat.**
 
-Do not put credentials into the repository. We will connect the frontend after the project is created and the schema has been applied.
+SwapNGrab's frontend now uses the project URL and publishable key in `assets/app.js`. The publishable key is designed to be public; database access is protected by Row Level Security. Never put the `service_role` or `sb_secret_...` key in website code, GitHub, or a chat.\n\nThe website uses Supabase Auth for email/password registration and login, reads active listings from the database, and allows signed-in users to publish offers and upload listing photos. Contact-owner messaging is a later feature and is not yet enabled.
