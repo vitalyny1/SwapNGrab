@@ -114,3 +114,42 @@ footer{display:flex;gap:18px;align-items:center;border-top:1px solid #ccc;backgr
   .right-column .matches-panel{flex:0 0 auto}
   .my-offers-panel .listing-list{max-height:180px}
 }
+
+
+/* Four independently resizable marketplace panels. */
+@media(min-width:701px){
+  .two-panel#fourPanelLayout{
+    --left-pane:32%;
+    --top-pane:62%;
+    display:grid;
+    grid-template-columns:minmax(240px,var(--left-pane)) 10px minmax(300px,1fr);
+    grid-template-rows:minmax(190px,var(--top-pane)) 10px minmax(170px,1fr);
+    grid-template-areas:
+      "search v matches"
+      "h cross h2"
+      "post v2 mine";
+    gap:0;
+    height:min(760px,calc(100vh - 145px));
+    min-height:420px;
+    align-items:stretch;
+  }
+  .grid-search{grid-area:search;min-width:0;min-height:0;overflow:auto;margin:0!important}
+  .grid-post{grid-area:post;min-width:0;min-height:0;overflow:auto;margin:0!important}
+  .grid-matches{grid-area:matches;min-width:0;min-height:0;height:auto!important;overflow:hidden;display:flex;flex-direction:column}
+  .grid-mine{grid-area:mine;min-width:0;min-height:0;max-height:none!important;overflow:hidden;display:flex;flex-direction:column}
+  .grid-mine[hidden]{display:none}
+  .grid-matches .listing-list,.grid-mine .listing-list{flex:1 1 auto;min-height:0;max-height:none;overflow:auto}
+  .layout-splitter{position:relative;z-index:5;background:#b9b9b9;touch-action:none;user-select:none}
+  .layout-splitter:hover,.layout-splitter:focus{background:#777;outline:2px solid #888;outline-offset:-2px}
+  .vertical-splitter{grid-area:v / 2 / v2 / 3;cursor:col-resize}
+  .horizontal-splitter{grid-area:h / 1 / 3 / 4;cursor:row-resize}
+  .splitter-cross{grid-area:cross;background:#b9b9b9;z-index:6;pointer-events:none}
+}
+@media(max-width:700px){
+  .two-panel#fourPanelLayout{display:flex;flex-direction:column;height:auto;min-height:0;gap:14px}
+  .layout-splitter,.splitter-cross{display:none}
+  .grid-search,.grid-post,.grid-matches,.grid-mine{width:100%;min-height:0;height:auto;max-height:none;overflow:visible}
+  .grid-post{margin-top:0!important}
+  .grid-matches{max-height:65vh;display:flex;flex-direction:column;overflow:hidden}
+  .grid-matches .listing-list,.grid-mine .listing-list{max-height:180px;overflow-y:auto}
+}
