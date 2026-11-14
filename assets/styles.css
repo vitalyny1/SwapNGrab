@@ -86,3 +86,13 @@ footer{display:flex;gap:18px;align-items:center;border-top:1px solid #ccc;backgr
 .post-location-photos-row input{width:100%;min-width:0}
 .post-location-photos-row .photo-input{height:36px;padding:7px 0}
 @media(max-width:420px){.post-location-photos-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px}.post-location-photos-row .photo-input{font-size:10px}}
+
+
+/* Live database listing cards and account feedback. */
+.listing-photo{width:76px;height:76px;object-fit:cover;border:1px solid #ddd;background:#f5f5f5}
+.listing-content{min-width:0}
+#authMessage{min-height:18px;line-height:1.4;color:#444}
+#authForm .login-link{display:block;margin:12px auto 0;text-decoration:underline}
+#authForm label[hidden]{display:none}
+.post-panel .post-note{overflow-wrap:anywhere}
+@media(max-width:700px){.listing-photo{width:58px;height:58px}}
