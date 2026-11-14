@@ -44,15 +44,21 @@
         <option value="space">Rooms &amp; Space</option>
       </select>
     </div>
-    <label for="locationInput">LOCATION</label>
-    <input id="locationInput" placeholder="Enter city or ZIP code">
-    <label for="distanceInput">DISTANCE</label>
-    <select id="distanceInput" class="field-select" aria-label="Search distance">
-      <option value="50" selected>50 Miles</option>
-      <option value="100">100 Miles</option>
-      <option value="250">250 Miles</option>
-      <option value="500">500 Miles</option>
-    </select>
+    <div class="location-distance-row">
+      <div class="location-field">
+        <label for="locationInput">LOCATION</label>
+        <input id="locationInput" placeholder="City or ZIP code">
+      </div>
+      <div class="distance-field">
+        <label for="distanceInput">DISTANCE</label>
+        <select id="distanceInput" class="field-select" aria-label="Search distance">
+          <option value="50" selected>50 Miles</option>
+          <option value="100">100 Miles</option>
+          <option value="250">250 Miles</option>
+          <option value="500">500 Miles</option>
+        </select>
+      </div>
+    </div>
     <button class="plain-button primary full" id="findMatches">Find my matches</button>
     </section>
     <section class="post-panel">
