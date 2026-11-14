@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SwapNGrab is a community marketplace to trade what you have for what you want.">
+  <title>SwapNGrab — Trade What You Have</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="#home" aria-label="SwapNGrab home"><span class="logo-mark">S</span> SwapNGrab</a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#browse">Browse offers</a><a href="#how">How it works</a>
+      <button class="nav-login" data-open-auth="login">Log in</button>
+      <button class="button button-small" data-open-auth="register">Join free</button>
+    </nav>
+    <button class="menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <div class="eyebrow"><span></span> THE COMMUNITY SWAP MARKETPLACE</div>
+          <h1>One person's <em>extra</em><br>is another's <em>treasure.</em></h1>
+          <p class="hero-lede">Trade what you have for what you want. Find your next great swap with people near you and across the country.</p>
+          <div class="hero-actions">
+            <a class="button" href="#browse">Explore offers <span>→</span></a>
+            <button class="button button-outline" data-open-auth="register">Post an offer</button>
+          </div>
+          <div class="hero-footnote">✳ Free to browse · No cash needed to trade</div>
+        </div>
+        <div class="hero-art" aria-label="Example of a trade">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+          <div class="swap-card card-have"><span class="card-kicker">YOU HAVE</span><div class="item-emoji">📷</div><strong>Vintage camera</strong><small>Good condition · Queens, NY</small></div>
+          <div class="swap-symbol">⇄</div>
+          <div class="swap-card card-want"><span class="card-kicker">YOU WANT</span><div class="item-emoji">🎸</div><strong>Acoustic guitar</strong><small>Open to similar offers</small></div>
+          <div class="floating-note">A better kind of deal <span>✦</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="browse-section section-wrap" id="browse">
+      <div class="section-top"><div><div class="eyebrow">THE MARKETPLACE</div><h2>Find something worth swapping.</h2><p>See what's out there. Your next great trade might be one search away.</p></div><a class="plain-link" href="#browse-all">View all offers →</a></div>
+      <form class="search-bar" id="searchForm"><span class="search-icon">⌕</span><input id="searchInput" type="search" placeholder="Try “bicycle”, “camera”, “tools”..." aria-label="Search offers"><button class="button" type="submit">Search</button></form>
+      <div class="filter-row"><span id="resultLabel">A few things people are offering</span><span class="sample-label">SAMPLE LISTINGS</span></div>
+      <div class="offer-grid" id="offerGrid"></div>
+      <div class="browse-bottom"><button class="button button-outline" id="showAll">Show all sample offers</button></div>
+    </section>
+
+    <section class="how-section" id="how"><div class="section-wrap">
+      <div class="center-heading"><div class="eyebrow">EASY AS ONE, TWO, SWAP</div><h2>Good trades start with<br><em>what you've got.</em></h2><p>No complicated listings. Just tell people what you have and what you'd like.</p></div>
+      <div class="steps"><article><span class="step-icon">＋</span><span class="step-num">01</span><h3>List what you have</h3><p>Describe the item or service you're ready to trade. Add a few keywords to help people find it.</p></article><article><span class="step-icon">♡</span><span class="step-num">02</span><h3>Say what you want</h3><p>Tell the community what you'd accept in return. You can add several ideas and an optional value.</p></article><article><span class="step-icon">⇄</span><span class="step-num">03</span><h3>Make a connection</h3><p>We'll look for matching interests and let you know when another member may have what you want.</p></article></div>
+    </div></section>
+
+    <section class="cta-section"><div><div class="eyebrow">HAVE SOMETHING TO TRADE?</div><h2>Give it a new story.</h2><p>Join the community and see what your stuff could get you.</p></div><button class="button button-light" data-open-auth="register">Get started — it's free <span>→</span></button></section>
+  </main>
+
+  <footer class="site-footer"><a class="logo" href="#home"><span class="logo-mark">S</span> SwapNGrab</a><span>Trade What You Have. Get What You Want. No Cash Needed.</span><span>© <span id="year"></span> SwapNGrab</span></footer>
+
+  <dialog id="authDialog" class="auth-dialog"><form method="dialog" class="auth-card" id="authForm"><button class="dialog-close" aria-label="Close">×</button><div class="logo"><span class="logo-mark">S</span> SwapNGrab</div><div class="eyebrow" id="authEyebrow">WELCOME TO THE COMMUNITY</div><h2 id="authTitle">Create your account</h2><p class="auth-description">Account registration and sign-in will be connected in the next development stage.</p><label>Email address<input type="email" placeholder="you@example.com" required></label><label>Password<input type="password" placeholder="At least 8 characters" minlength="8" required></label><button class="button auth-submit" type="submit">Continue</button><p class="auth-footnote">Prototype only — this demo does not send or save your information.</p></form></dialog>
+  <script src="assets/app.js"></script>
+</body>
+</html>
