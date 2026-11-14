@@ -12,7 +12,7 @@
     <div class="brand-tagline">Trade What You Have. Get What You Want.</div>
   </div>
   <div class="header-account">
-    <span>Want to save your offers and manage your matches?</span>
+    <span id="accountPrompt">Want to save your offers and manage your matches?</span>
     <button class="login-link" data-login>Log in / Create account</button>
   </div>
 </header>
@@ -82,8 +82,8 @@
           <input id="postPhotos" class="photo-input" type="file" accept="image/*" multiple>
         </div>
       </div>
-      <button class="plain-button primary full" type="button" data-login>Log in to post offer</button>
-      <p class="post-note">Posting will be enabled after account registration is connected.</p>
+      <button class="plain-button primary full" type="button" id="postOfferButton">Log in to post offer</button>
+      <p class="post-note" id="postNote">Create an account or log in to post an offer.</p>
     </section>
   </aside>
   <section class="matches-panel" id="matches">
