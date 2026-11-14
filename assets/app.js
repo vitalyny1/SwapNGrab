@@ -60,7 +60,6 @@ function listingCard(item) {
     ? '<img class="listing-photo" src="'+escapeHTML(imageUrl)+'" alt="">'
     : '<div class="thumb" aria-hidden="true">↻</div>';
   return '<article class="listing">'+image+'<div class="listing-content">'+
-    '<h3>'+escapeHTML(item.title)+'</h3>'+
     '<span class="category-tag">'+escapeHTML(typeName(item.listing_type))+'</span>'+
     '<p><b>Have / Offer:</b> '+escapeHTML(item.have_text)+'</p>'+
     '<p><b>Want:</b> '+escapeHTML(item.want_text || "Open to any offer")+'</p>'+
