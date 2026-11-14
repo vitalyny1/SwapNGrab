@@ -3,29 +3,63 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="SwapNGrab — trade what you have for what you want.">
-<title>SwapNGrab — Local Swap Marketplace</title><link rel="stylesheet" href="assets/styles.css">
+<title>SwapNGrab — Swap Marketplace</title><link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
-<header class="topbar"><a class="brand" href="#">swap<span>n</span>grab</a><nav><a href="#dashboard">My swap desk</a><a href="#matches">Matches</a><a href="#browse">Browse all offers</a><button class="login-link" data-login>Log in</button></nav></header>
-<main class="page">
-<div class="welcome"><div><h1>Trade what you have. Get what you want.</h1><p>A simple community marketplace for swapping things — no cash required.</p></div><button class="post-button" data-login>＋ Post an offer</button></div>
-<div class="layout" id="dashboard">
-<aside class="sidebar">
-<section class="panel account"><h2>YOUR SWAP DESK</h2><div class="signed-out"><p class="muted">Log in to manage your offers and see matches selected for you.</p><button class="blue-button full" data-login>Log in / Create account</button></div></section>
-<section class="panel preferences"><h2>WHAT ARE YOU LOOKING FOR?</h2><label for="wantInput">I WANT</label><input id="wantInput" placeholder="e.g. bicycle, camera, gold coins" value="bicycle">
-<label for="haveInput">I HAVE TO TRADE</label><input id="haveInput" placeholder="e.g. comic books, tools">
-<label for="keywordsInput">OTHER KEYWORDS (optional)</label><input id="keywordsInput" placeholder="brands, model, details">
-<button class="blue-button full" id="findMatches">Find my matches</button><p class="small muted">Matches are based on the words you enter in your WANT field.</p></section>
-<section class="panel quick-links"><h2>QUICK LINKS</h2><a href="#matches">My matching offers</a><a href="#browse">Browse all listings</a><a href="#how">How swapping works</a></section>
-</aside>
-<section class="main-column">
-<div class="panel matches-panel" id="matches"><div class="panel-heading"><div><h2>MATCHING OFFERS</h2><p id="matchCaption">Offers that may have what you're looking for</p></div><span class="count" id="matchCount">0 matches</span></div><div id="matchList" class="listing-list"></div></div>
-<div class="panel browse-panel" id="browse"><div class="panel-heading"><div><h2>RECENT OFFERS</h2><p>More things available to swap in the community</p></div><a href="#browse" class="small-link">View all</a></div><div id="recentList" class="listing-list"></div></div>
-</section>
-</div>
-<section class="how panel" id="how"><h2>HOW SWAPNGRAB WORKS</h2><div class="how-grid"><div><b>1. List what you have</b><p>Describe an item you are willing to trade.</p></div><div><b>2. Tell us what you want</b><p>Add the products or keywords you are looking for.</p></div><div><b>3. Find a match</b><p>See offers that match your interests and contact the member.</p></div></div></section>
-<footer>swap<span>n</span>grab <span class="footer-note">Trade What You Have. Get What You Want.</span><span>© 2026 SwapNGrab</span></footer>
+<header class="topbar">
+  <a class="brand" href="#"><span class="cl-mark">↻</span> swap<span>n</span>grab</a>
+  <div class="top-controls">
+    <select aria-label="Location"><option>United States</option><option>New York</option></select>
+    <select aria-label="Area"><option>All locations</option><option>Nearby</option></select>
+    <select aria-label="Marketplace"><option>all swaps</option><option>items wanted</option></select>
+    <button class="login-link" data-login>log in / sign up</button>
+  </div>
+</header>
+<main class="market">
+  <aside class="filters" id="dashboard">
+    <h2>your swap desk</h2>
+    <div class="side-section account-mini"><p>Sign in to manage your offers and see matches selected for you.</p><button class="plain-button" data-login>log in / create account</button></div>
+    <div class="side-section">
+      <h3>what are you looking for?</h3>
+      <label for="wantInput">I WANT</label>
+      <input id="wantInput" placeholder="bicycle, camera, coins..." value="bicycle">
+      <label for="haveInput">I HAVE TO TRADE</label>
+      <input id="haveInput" placeholder="comic books, tools...">
+      <label for="keywordsInput">OTHER KEYWORDS</label>
+      <input id="keywordsInput" placeholder="brand, model, details">
+      <button class="plain-button primary" id="findMatches">find my matches</button>
+    </div>
+    <div class="side-section">
+      <h3>browse swaps</h3>
+      <a href="#matches">matching offers <span id="sideMatchCount">•</span></a>
+      <a href="#browse">all recent offers</a>
+      <a href="#how">how swapping works</a>
+    </div>
+    <div class="side-section">
+      <h3>refine matches</h3>
+      <label class="check"><input type="checkbox"> search titles only</label>
+      <label class="check"><input type="checkbox"> has photo</label>
+      <label class="check"><input type="checkbox"> posted recently</label>
+      <label for="distance">distance</label><input id="distance" placeholder="any distance">
+      <label for="location">location / ZIP</label><input id="location" placeholder="city or ZIP code">
+    </div>
+  </aside>
+  <section class="results-area">
+    <div class="search-row"><input aria-label="Search swaps" placeholder="search swap offers"><button aria-label="Search">⌕</button></div>
+    <div class="toolbar">
+      <div class="view-tabs"><button class="active" title="List view">☷</button><button title="Grid view">▦</button></div>
+      <select aria-label="Sort offers"><option>newest</option><option>closest</option><option>best match</option></select>
+      <button class="filter-chip">have / want</button><button class="filter-chip">location</button><button class="filter-chip">value</button>
+      <button class="post-button" data-login>＋ post an offer</button>
+    </div>
+    <div class="results-title" id="matches"><div><h1>matching swap offers</h1><p id="matchCaption">Offers that may have what you're looking for</p></div><span class="count" id="matchCount">0 matches</span></div>
+    <div id="matchList" class="listing-list"></div>
+    <div class="results-title recent-title" id="browse"><div><h2>recent offers</h2><p>More things available to trade</p></div><a href="#browse">view all</a></div>
+    <div id="recentList" class="listing-list"></div>
+    <section class="how" id="how"><h2>how SwapNGrab works</h2><p>List what you have, tell us what you want, and find someone interested in making a trade.</p></section>
+  </section>
 </main>
-<dialog id="loginDialog"><form method="dialog" class="login-box"><button class="close" aria-label="Close">×</button><h2>Log in to SwapNGrab</h2><p class="muted">Account sign-in will be connected in the next development step.</p><label>Email<input type="email" placeholder="you@example.com" required></label><label>Password<input type="password" placeholder="Password" required></label><button class="blue-button full">Continue</button><small>This is a visual prototype. No account details are saved.</small></form></dialog>
+<footer><span class="footer-brand">swap<span>n</span>grab</span><span>Trade What You Have. Get What You Want.</span><span>© 2026 SwapNGrab</span></footer>
+<dialog id="loginDialog"><form method="dialog" class="login-box"><button class="close" aria-label="Close">×</button><h2>Log in to SwapNGrab</h2><p>Account sign-in will be connected in the next development step.</p><label>Email<input type="email" placeholder="you@example.com" required></label><label>Password<input type="password" placeholder="Password" required></label><button class="plain-button primary full">Continue</button><small>This is a visual prototype. No account details are saved.</small></form></dialog>
 <script src="assets/app.js"></script>
 </body></html>
