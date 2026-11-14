@@ -1,41 +1,22 @@
 (() => {
-  const offers = [
-    {title:"Vintage film camera",emoji:"📷",tag:"ELECTRONICS",have:"35mm camera with lens, in good working condition.",want:"Acoustic guitar, vinyl records, or similar.",location:"Queens, NY"},
-    {title:"Cordless power tool set",emoji:"🛠️",tag:"TOOLS",have:"Cordless drill, impact driver and two batteries.",want:"Table saw or other woodworking tools.",location:"Brooklyn, NY"},
-    {title:"Mountain bike",emoji:"🚲",tag:"SPORTS & OUTDOORS",have:"Adult mountain bike, recently tuned up.",want:"Laptop, camera equipment, or make an offer.",location:"Long Island, NY"},
-    {title:"Vinyl record collection",emoji:"💿",tag:"MUSIC",have:"Classic rock and jazz records, assorted collection.",want:"Vintage stereo receiver or turntable.",location:"New Jersey"},
-    {title:"Solid wood coffee table",emoji:"🪵",tag:"HOME",have:"Handmade oak coffee table, very good condition.",want:"Bookshelf, floor lamp, or houseplants.",location:"Westchester, NY"},
-    {title:"Board game collection",emoji:"🎲",tag:"GAMES & HOBBIES",have:"Strategy and family games, several out of print.",want:"LEGO sets, model trains, or puzzles.",location:"Connecticut"},
-    {title:"Digital piano keyboard",emoji:"🎹",tag:"MUSIC",have:"88-key digital keyboard with stand.",want:"Electric guitar or audio recording gear.",location:"Manhattan, NY"},
-    {title:"Camping equipment",emoji:"⛺",tag:"SPORTS & OUTDOORS",have:"Two-person tent, sleeping bags and camp stove.",want:"Fishing gear or folding kayak.",location:"New York, NY"},
-    {title:"Vintage comic books",emoji:"📚",tag:"COLLECTIBLES",have:"Marvel and DC comics, assorted years.",want:"Silver coins, gold coins, or coin collection.",location:"Queens, NY"}
-  ];
-  const grid = document.getElementById("offerGrid");
-  const search = document.getElementById("searchInput");
-  const resultLabel = document.getElementById("resultLabel");
-  let showAll = false;
-  const card = item => `<article class="offer-card"><div class="offer-top"><span class="offer-tag">${item.tag}</span><span class="offer-emoji">${item.emoji}</span></div><h3>${item.title}</h3><p><b>Have:</b> ${item.have}</p><p><b>Want:</b> ${item.want}</p><div class="offer-location">⌖ &nbsp;${item.location} &nbsp;·&nbsp; Sample listing</div></article>`;
-  function render() {
-    const term = search.value.trim().toLowerCase();
-    const matches = offers.filter(o => Object.values(o).join(" ").toLowerCase().includes(term));
-    const visible = showAll || term ? matches : matches.slice(0,6);
-    grid.innerHTML = visible.length ? visible.map(card).join("") : '<p>No offers match that search. Try a different keyword.</p>';
-    resultLabel.textContent = term ? `${matches.length} sample offer${matches.length === 1 ? "" : "s"} found` : "A few things people are offering";
-    document.getElementById("showAll").hidden = showAll || !!term || matches.length <= 6;
-  }
-  document.getElementById("searchForm").addEventListener("submit", e => {e.preventDefault();showAll=true;render();});
-  document.getElementById("showAll").addEventListener("click", () => {showAll=true;render();});
-  search.addEventListener("input", () => {showAll=false;render();});
-  render();
-  const dialog = document.getElementById("authDialog");
-  document.querySelectorAll("[data-open-auth]").forEach(btn => btn.addEventListener("click", () => {
-    const register = btn.dataset.openAuth === "register";
-    document.getElementById("authTitle").textContent = register ? "Create your account" : "Welcome back";
-    document.getElementById("authEyebrow").textContent = register ? "JOIN THE COMMUNITY" : "GOOD TO SEE YOU AGAIN";
-    dialog.showModal();
-  }));
-  document.getElementById("authForm").addEventListener("submit", e => {e.preventDefault();dialog.close();});
-  document.getElementById("menuToggle").addEventListener("click", () => document.querySelector(".main-nav").classList.toggle("open"));
-  document.querySelectorAll(".main-nav a").forEach(a => a.addEventListener("click", () => document.querySelector(".main-nav").classList.remove("open")));
-  document.getElementById("year").textContent = new Date().getFullYear();
+const products=[
+{title:"Hybrid commuter bicycle",emoji:"🚲",have:"Adult hybrid bike, recently serviced, good condition.",want:"Camera gear, power tools, or similar value.",where:"Brooklyn, NY",keywords:"bicycle bike cycling commuter"},
+{title:"Vintage road bicycle",emoji:"🚴",have:"Steel-frame road bike, classic style, rides well.",want:"Mountain bike accessories or electronics.",where:"Queens, NY",keywords:"bicycle bike road cycling"},
+{title:"Digital SLR camera kit",emoji:"📷",have:"Camera body with two lenses and carrying bag.",want:"Bicycle, guitar, or audio equipment.",where:"Long Island, NY",keywords:"camera photography dslr"},
+{title:"Cordless tool set",emoji:"🛠️",have:"Drill, impact driver, batteries and charger.",want:"Bicycle or vintage collectibles.",where:"New Jersey",keywords:"tools drill"},
+{title:"Vintage comic book collection",emoji:"📚",have:"Marvel and DC comics from assorted years.",want:"Gold coins, silver coins, or bicycle.",where:"Queens, NY",keywords:"comics books coins"},
+{title:"Acoustic guitar",emoji:"🎸",have:"Steel-string acoustic guitar, very good condition.",want:"Camera equipment or vinyl records.",where:"Manhattan, NY",keywords:"guitar music"},
+{title:"Mountain bike",emoji:"🚵",have:"Adult mountain bike with front suspension.",want:"Laptop, camera equipment, or tools.",where:"Westchester, NY",keywords:"bicycle bike mountain"},
+{title:"Gold and silver coin set",emoji:"🪙",have:"Small collection of collectible coins.",want:"Vintage comics, camera, or musical instrument.",where:"Connecticut",keywords:"coins gold silver"}
+];
+const recent=[
+{title:"Vinyl record collection",emoji:"💿",have:"Classic rock and jazz records.",want:"Turntable or stereo receiver.",where:"New York, NY"},
+{title:"Solid wood coffee table",emoji:"🪵",have:"Handmade oak coffee table.",want:"Bookshelf, floor lamp, or houseplants.",where:"Westchester, NY"},
+{title:"Camping equipment",emoji:"⛺",have:"Tent, sleeping bags and camp stove.",want:"Fishing gear or folding kayak.",where:"New York, NY"}
+];
+const el=id=>document.getElementById(id);
+function makeListing(p,matched=false){return '<article class="listing"><div class="thumb">'+p.emoji+'</div><div><h3>'+p.title+'</h3><p><b>Have:</b> '+p.have+'</p><p><b>Want:</b> '+p.want+'</p><div class="meta">⌖ '+p.where+' · Sample listing</div></div>'+(matched?'<span class="match-tag">Possible match</span>':'')+'</article>'}
+function renderMatches(){const q=(el("wantInput").value+" "+el("keywordsInput").value).toLowerCase().trim();const terms=q.split(/[^a-z0-9]+/).filter(w=>w.length>2);let results=products.filter(p=>{const hay=(p.title+" "+p.have+" "+p.want+" "+p.keywords).toLowerCase();return terms.some(t=>hay.includes(t))});if(!terms.length)results=products.slice(0,4);el("matchList").innerHTML=results.length?results.map(p=>makeListing(p,true)).join(""):'<p class="muted small">No sample matches found. Try broader keywords such as bicycle, camera, tools, coins or guitar.</p>';el("matchCount").textContent=results.length+" possible match"+(results.length===1?"":"es");el("matchCaption").textContent='Based on what you said you want: '+(el("wantInput").value||"your interests")}
+el("findMatches").addEventListener("click",renderMatches);el("wantInput").addEventListener("keydown",e=>{if(e.key==="Enter")renderMatches()});el("recentList").innerHTML=recent.map(p=>makeListing(p,false)).join("");renderMatches();
+document.querySelectorAll("[data-login]").forEach(b=>b.addEventListener("click",()=>el("loginDialog").showModal()));el("loginDialog").querySelector("form").addEventListener("submit",e=>{e.preventDefault();el("loginDialog").close()});
 })();
