@@ -22,11 +22,12 @@ SwapNGrab uses Supabase (PostgreSQL + Auth + Storage).
 
 This migration creates:
 - `profiles` — public profile details only; email addresses are not exposed.
-- `listings` — HAVE/WANT listings, location coordinates, status and timestamps.
+- `listings` — HAVE/WANT listings, one of the launch categories (`item`, `service_skill`, `space`), location coordinates, status and timestamps.
 - `listing_images` — photo metadata.
 - Row-level security so visitors can browse active listings and signed-in users can manage only their own listings.
 - A `listing-photos` storage bucket with uploads restricted to each user's own folder.
 - A blank WANT value is normalized to NULL, representing “open to any offer.”
+- Supabase Auth user creation automatically creates a matching `profiles` row. Login, signup, password reset and email verification are handled by Supabase Auth when we connect the website.
 
 ## 3. Connect the website (next development step)
 
