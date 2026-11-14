@@ -216,6 +216,8 @@ el("authForm").addEventListener("submit",async event=>{
     if(signup && !response.data.session) {
       el("authMessage").textContent="Account created. Check your email for the confirmation link, then log in.";
     } else {
+      currentUser = response.data.user || response.data.session?.user || null;
+      updateAccountUI();
       el("authMessage").textContent="You are signed in.";
       el("loginDialog").close();
     }
