@@ -86,6 +86,14 @@
       <p class="post-note" id="postNote">Create an account or log in to post an offer.</p>
     </section>
   </aside>
+  <div class="right-column">
+  <section class="my-offers-panel" id="myOffersPanel" hidden>
+    <div class="matches-heading">
+      <div><h2>MY OFFERS</h2><p>Your listings, separate from search results.</p></div>
+      <span class="count" id="myOfferCount">0 offers</span>
+    </div>
+    <div id="myOfferList" class="listing-list"></div>
+  </section>
   <section class="matches-panel" id="matches">
     <div class="matches-heading">
       <div><h2>MATCHING OFFERS</h2><p id="matchCaption">All available offers · closest to New York City first</p></div>
@@ -93,6 +101,7 @@
     </div>
     <div id="matchList" class="listing-list"></div>
   </section>
+  </div>
 </main>
 <footer><span>© 2026 SwapNGrab</span></footer>
 <dialog id="loginDialog"><form class="login-box" id="authForm"><button type="button" class="close" id="closeAuth" aria-label="Close">×</button><h2 id="authTitle">Log in to SwapNGrab</h2><p id="authIntro">Sign in to manage your offers.</p><label id="displayNameWrap" hidden>Your name<input id="authDisplayName" type="text" autocomplete="name" placeholder="Your name"></label><label>Email<input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required></label><label>Password<input id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters" required></label><button class="plain-button primary full" id="authSubmit" type="submit">Log in</button><p id="authMessage" role="status"></p><button class="login-link" id="authModeToggle" type="button">Create a new account</button><small>By creating an account, you agree to use SwapNGrab responsibly.</small></form></dialog>
