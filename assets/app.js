@@ -9,14 +9,21 @@ const products=[
 {title:"Mountain bike",emoji:"🚵",have:"Adult mountain bike with front suspension.",want:"Laptop, camera equipment, or tools.",where:"Westchester, NY",keywords:"bicycle bike mountain"},
 {title:"Gold and silver coin set",emoji:"🪙",have:"Small collection of collectible coins.",want:"Vintage comics, camera, or musical instrument.",where:"Connecticut",keywords:"coins gold silver"}
 ];
-const recent=[
-{title:"Vinyl record collection",emoji:"💿",have:"Classic rock and jazz records.",want:"Turntable or stereo receiver.",where:"New York, NY"},
-{title:"Solid wood coffee table",emoji:"🪵",have:"Handmade oak coffee table.",want:"Bookshelf, floor lamp, or houseplants.",where:"Westchester, NY"},
-{title:"Camping equipment",emoji:"⛺",have:"Tent, sleeping bags and camp stove.",want:"Fishing gear or folding kayak.",where:"New York, NY"}
-];
 const el=id=>document.getElementById(id);
-function makeListing(p,matched=false){return '<article class="listing"><div class="thumb">'+p.emoji+'</div><div><h3>'+p.title+'</h3><p><b>Have:</b> '+p.have+'</p><p><b>Want:</b> '+p.want+'</p><div class="meta">⌖ '+p.where+' · Sample listing</div></div>'+(matched?'<span class="match-tag">Possible match</span>':'')+'</article>'}
-function renderMatches(){const q=(el("wantInput").value+" "+el("keywordsInput").value).toLowerCase().trim();const terms=q.split(/[^a-z0-9]+/).filter(w=>w.length>2);let results=products.filter(p=>{const hay=(p.title+" "+p.have+" "+p.want+" "+p.keywords).toLowerCase();return terms.some(t=>hay.includes(t))});if(!terms.length)results=products.slice(0,4);el("matchList").innerHTML=results.length?results.map(p=>makeListing(p,true)).join(""):'<p class="muted small">No sample matches found. Try broader keywords such as bicycle, camera, tools, coins or guitar.</p>';el("matchCount").textContent=results.length+" possible match"+(results.length===1?"":"es");el("matchCaption").textContent='Based on what you said you want: '+(el("wantInput").value||"your interests")}
-el("findMatches").addEventListener("click",renderMatches);el("wantInput").addEventListener("keydown",e=>{if(e.key==="Enter")renderMatches()});el("recentList").innerHTML=recent.map(p=>makeListing(p,false)).join("");renderMatches();
-document.querySelectorAll("[data-login]").forEach(b=>b.addEventListener("click",()=>el("loginDialog").showModal()));el("loginDialog").querySelector("form").addEventListener("submit",e=>{e.preventDefault();el("loginDialog").close()});
+function makeListing(p){return '<article class="listing"><div class="thumb">'+p.emoji+'</div><div><h3>'+p.title+'</h3><p><b>Have:</b> '+p.have+'</p><p><b>Want:</b> '+p.want+'</p><div class="meta">⌖ '+p.where+' · Sample listing</div></div><span class="match-tag">Possible match</span></article>'}
+function renderMatches(){
+ const q=(el("wantInput").value+" "+el("keywordsInput").value).toLowerCase().trim();
+ const terms=q.split(/[^a-z0-9]+/).filter(w=>w.length>2);
+ let results=products.filter(p=>{const hay=(p.title+" "+p.have+" "+p.want+" "+p.keywords).toLowerCase();return terms.some(t=>hay.includes(t))});
+ if(!terms.length)results=products.slice(0,4);
+ el("matchList").innerHTML=results.length?results.map(makeListing).join(""):'<p class="empty-state">No sample matches found. Try broader keywords such as bicycle, camera, tools, coins or guitar.</p>';
+ el("matchCount").textContent=results.length+" possible match"+(results.length===1?"":"es");
+ el("matchCaption").textContent='Based on what you want: '+(el("wantInput").value||"your interests");
+}
+el("findMatches").addEventListener("click",renderMatches);
+el("wantInput").addEventListener("keydown",e=>{if(e.key==="Enter")renderMatches()});
+el("keywordsInput").addEventListener("keydown",e=>{if(e.key==="Enter")renderMatches()});
+renderMatches();
+document.querySelectorAll("[data-login]").forEach(b=>b.addEventListener("click",()=>el("loginDialog").showModal()));
+el("loginDialog").querySelector("form").addEventListener("submit",e=>{e.preventDefault();el("loginDialog").close()});
 })();
