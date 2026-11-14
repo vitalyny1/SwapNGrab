@@ -33,9 +33,10 @@
       </button>
       <div class="category-picker-menu" id="categoryPickerMenu" role="listbox" aria-label="Browse category" hidden>
         <button type="button" class="category-option selected" role="option" aria-selected="true" data-value="all"><strong>ALL</strong><span>Browse every offer.</span></button>
-        <button type="button" class="category-option" role="option" aria-selected="false" data-value="item"><strong>Things</strong><span>Furniture, cars, electronics, clothes.</span></button>
-        <button type="button" class="category-option" role="option" aria-selected="false" data-value="service_skill"><strong>Services &amp; Skills</strong><span>Repairs, lessons, computer help.</span></button>
-        <button type="button" class="category-option" role="option" aria-selected="false" data-value="space"><strong>Rooms &amp; Space</strong><span>Rooms, parking, storage.</span></button>
+        <button type="button" class="category-option" role="option" aria-selected="false" data-value="item"><strong>Things</strong><span>Physical items such as furniture, cars, electronics, and clothes.</span></button>
+        <button type="button" class="category-option" role="option" aria-selected="false" data-value="service_skill"><strong>Services &amp; Skills</strong><span>Work, help, and knowledge such as repairs, lessons, and computer help.</span></button>
+        <button type="button" class="category-option" role="option" aria-selected="false" data-value="space"><strong>Rooms &amp; Space</strong><span>Places such as rooms, parking, and storage.</span></button>
+        <p class="category-menu-note">Offers can match across categories.</p>
       </div>
       <input type="hidden" id="categoryInput" class="category-value" value="all">
     </div>
@@ -71,7 +72,6 @@
       <textarea id="postHave" rows="2" placeholder="Describe what you have or what you can offer"></textarea>
       <label for="postWant">I WANT</label>
       <textarea id="postWant" rows="2" placeholder="Optional — leave blank if you are open to any offer"></textarea>
-      <p class="field-help">Things include physical items. Services &amp; Skills include work, help, and knowledge. Rooms &amp; Space include places, parking, and storage. Offers can match across categories.</p>
       <label for="postLocation">LOCATION</label>
       <input id="postLocation" placeholder="City or ZIP code">
       <label for="postPhotos">PHOTOS (OPTIONAL)</label>
