@@ -181,6 +181,7 @@ function updateAccountUI() {
   el("accountPrompt").textContent = currentUser
     ? "Signed in as " + (currentUser.email || "SwapNGrab member")
     : "Want to save your offers and manage your matches?";
+  el("postOfferButton").disabled = false;
   el("postOfferButton").textContent = currentUser ? "Post my offer" : "Log in to post offer";
   el("postNote").textContent = currentUser
     ? "You are signed in. Your offer will be published after you submit it."
@@ -270,7 +271,12 @@ async function postOffer() {
     el("postNote").textContent="Could not post offer: "+(error.message || "Please try again.");
   } finally {button.disabled=false;}
 }
-el("postOfferButton").addEventListener("click",postOffer);
+document.addEventListener("click",event=>{
+  if(event.target.closest("#postOfferButton")){
+    event.preventDefault();
+    postOffer();
+  }
+});
 
 supabase.auth.onAuthStateChange((_event,session)=>{
   currentUser=session?.user || null;
