@@ -24,6 +24,7 @@ const escapeHTML = s => String(s ?? "").replace(/[&<>"']/g, ch => ({
 }[ch]));
 let currentUser = null;
 let currentListings = [];
+let myListings = [];
 let locationCenter = null;
 
 async function geocode(q) {
@@ -84,7 +85,30 @@ async function loadListings() {
     return;
   }
   currentListings = result.data || [];
+  if (currentUser) {
+    let own = await supabase.from("listings")
+      .select("*, listing_images(storage_path), profiles(display_name,username)")
+      .eq("owner_id",currentUser.id)
+      .order("created_at",{ascending:false});
+    if (own.error) {
+      own = await supabase.from("listings").select("*").eq("owner_id",currentUser.id).order("created_at",{ascending:false});
+    }
+    myListings = own.data || [];
+  } else {
+    myListings = [];
+  }
+  renderMyOffers();
   renderListings(false);
+}
+
+function renderMyOffers() {
+  const panel=el("myOffersPanel");
+  panel.hidden=!currentUser;
+  if(!currentUser)return;
+  el("myOfferCount").textContent=myListings.length+" offer"+(myListings.length===1?"":"s");
+  el("myOfferList").innerHTML=myListings.length
+    ? myListings.map(listingCard).join("")
+    : '<p class="empty-state">You have not posted any offers yet.</p>';
 }
 
 function renderListings(applySearch) {
@@ -93,6 +117,7 @@ function renderListings(applySearch) {
   const category = el("categoryInput").value;
   const radius = Number(el("distanceInput").value);
   let list = currentListings.filter(item => {
+    if (currentUser && item.owner_id === currentUser.id) return false;
     if (category !== "all" && item.listing_type !== category) return false;
     if (locationCenter && item.latitude != null && item.longitude != null &&
         miles(locationCenter,{lat:item.latitude,lon:item.longitude}) > radius) return false;
@@ -281,6 +306,7 @@ document.addEventListener("click",event=>{
 supabase.auth.onAuthStateChange((_event,session)=>{
   currentUser=session?.user || null;
   updateAccountUI();
+  loadListings();
 });
 (async()=>{
   const {data}=await supabase.auth.getSession();
