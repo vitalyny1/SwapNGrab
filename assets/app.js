@@ -46,6 +46,40 @@ async function render(filter=false){
 }
 el("findMatches").addEventListener("click",()=>render(true));
 el("categoryInput").addEventListener("change",()=>render(true));
+const categoryPicker=el("categoryPicker"),categoryToggle=el("categoryPickerToggle"),categoryMenu=el("categoryPickerMenu"),categoryLabel=el("categoryPickerLabel");
+categoryToggle.addEventListener("click",()=>{
+ const open=categoryMenu.hidden;
+ categoryMenu.hidden=!open;
+ categoryToggle.setAttribute("aria-expanded",String(open));
+});
+categoryMenu.addEventListener("click",e=>{
+ const option=e.target.closest("[data-value]");
+ if(!option)return;
+ const select=el("categoryInput");
+ select.value=option.dataset.value;
+ categoryLabel.textContent=option.querySelector("strong").textContent+" — "+option.querySelector("span").textContent;
+ categoryMenu.querySelectorAll(".category-option").forEach(item=>{
+  const selected=item===option;
+  item.classList.toggle("selected",selected);
+  item.setAttribute("aria-selected",String(selected));
+ });
+ categoryMenu.hidden=true;
+ categoryToggle.setAttribute("aria-expanded","false");
+ select.dispatchEvent(new Event("change",{bubbles:true}));
+});
+document.addEventListener("click",e=>{
+ if(!categoryPicker.contains(e.target)){
+  categoryMenu.hidden=true;
+  categoryToggle.setAttribute("aria-expanded","false");
+ }
+});
+categoryPicker.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){
+  categoryMenu.hidden=true;
+  categoryToggle.setAttribute("aria-expanded","false");
+  categoryToggle.focus();
+ }
+});
 ["wantInput","haveInput","locationInput"].forEach(id=>el(id).addEventListener("keydown",e=>{if(e.key==="Enter")render(true)}));
 render(false);
 document.querySelectorAll("[data-login]").forEach(b=>b.addEventListener("click",()=>el("loginDialog").showModal()));
