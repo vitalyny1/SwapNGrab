@@ -95,7 +95,7 @@
   </section>
 </main>
 <footer><span>© 2026 SwapNGrab</span></footer>
-<dialog id="loginDialog"><form method="dialog" class="login-box"><button class="close" aria-label="Close">×</button><h2>Log in to SwapNGrab</h2><p>Account sign-in will be connected in the next development step.</p><label>Email<input type="email" placeholder="you@example.com" required></label><label>Password<input type="password" placeholder="Password" required></label><button class="plain-button primary full">Continue</button><small>This is a visual prototype. No account details are saved.</small></form></dialog>
+<dialog id="loginDialog"><form class="login-box" id="authForm"><button type="button" class="close" id="closeAuth" aria-label="Close">×</button><h2 id="authTitle">Log in to SwapNGrab</h2><p id="authIntro">Sign in to manage your offers.</p><label id="displayNameWrap" hidden>Your name<input id="authDisplayName" type="text" autocomplete="name" placeholder="Your name"></label><label>Email<input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required></label><label>Password<input id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters" required></label><button class="plain-button primary full" id="authSubmit" type="submit">Log in</button><p id="authMessage" role="status"></p><button class="login-link" id="authModeToggle" type="button">Create a new account</button><small>By creating an account, you agree to use SwapNGrab responsibly.</small></form></dialog>
 <dialog id="contactDialog">
   <form method="dialog" class="login-box" id="contactForm">
     <button type="button" class="close" id="closeContact" aria-label="Close">×</button>
@@ -107,5 +107,5 @@
     <small>Messaging will be activated when SwapNGrab's account and email backend is connected.</small>
   </form>
 </dialog>
-<script src="assets/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n<script src="assets/app.js"></script>
 </body></html>
