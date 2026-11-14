@@ -76,3 +76,5 @@ footer{display:flex;gap:18px;align-items:center;border-top:1px solid #ccc;backgr
 .location-distance-row .location-field,.location-distance-row .distance-field{min-width:0}
 .location-distance-row label{margin-top:15px}
 .location-distance-row input,.location-distance-row select{width:100%;min-width:0}
+
+.category-menu-note{margin:0;padding:9px;background:#f7f7f7;border-top:1px solid #ddd;font-size:11px;line-height:1.4;color:#555}
