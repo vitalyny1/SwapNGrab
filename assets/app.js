@@ -1,96 +1,277 @@
 (() => {
-const products=[
-{title:"Acoustic guitar",emoji:"🎸",type:"item",have:"Steel-string acoustic guitar, very good condition.",want:"Camera equipment or vinyl records.",where:"Manhattan, NY",region:"nyc",rank:1,lat:40.7831,lon:-73.9712,keywords:"guitar music"},
-{title:"Vintage road bicycle",emoji:"🚴",type:"item",have:"Steel-frame road bike, classic style, rides well.",want:"Plumbing service or bicycle accessories.",where:"Queens, NY",region:"nyc",rank:2,lat:40.7282,lon:-73.7949,keywords:"bicycle bike road cycling"},
-{title:"Vintage comic book collection",emoji:"📚",type:"item",have:"Marvel and DC comics from assorted years.",want:"Gold coins, silver coins, or bicycle.",where:"Queens, NY",region:"nyc",rank:3,lat:40.7282,lon:-73.7949,keywords:"comics books coins"},
-{title:"Hybrid commuter bicycle",emoji:"🚲",type:"item",have:"Adult hybrid bike, recently serviced, good condition.",want:"Camera gear, power tools, or similar value.",where:"Brooklyn, NY",region:"nyc",rank:4,lat:40.6782,lon:-73.9442,keywords:"bicycle bike cycling commuter"},
-{title:"Digital SLR camera kit",emoji:"📷",type:"item",have:"Camera body with two lenses and carrying bag.",want:"Bicycle, guitar, or audio equipment.",where:"Long Island, NY",region:"nearby",rank:5,lat:40.7891,lon:-73.1350,keywords:"camera photography dslr"},
-{title:"Mountain bike",emoji:"🚵",type:"item",have:"Adult mountain bike with front suspension.",want:"Laptop, camera equipment, or tools.",where:"Westchester, NY",region:"nearby",rank:6,lat:41.1220,lon:-73.7949,keywords:"bicycle bike mountain"},
-{title:"Cordless tool set",emoji:"🛠️",type:"item",have:"Drill, impact driver, batteries and charger.",want:"Bicycle or vintage collectibles.",where:"New Jersey",region:"nearby",rank:7,lat:40.7178,lon:-74.0431,keywords:"tools drill"},
-{title:"Gold and silver coin set",emoji:"🪙",type:"item",have:"Small collection of collectible coins.",want:"Vintage comics, camera, or musical instrument.",where:"Connecticut",region:"nearby",rank:8,lat:41.0262,lon:-73.6282,keywords:"coins gold silver"},
-{title:"Home plumbing service",emoji:"🔧",type:"service",have:"Help with faucet repairs, leaks, and basic home plumbing.",want:"Bicycle or bicycle accessories.",where:"Queens, NY",region:"nyc",rank:9,lat:40.7282,lon:-73.7949,keywords:"plumbing plumber faucet repair service"},
-{title:"Website design help",emoji:"💻",type:"skill",have:"I can build or improve a small business website.",want:"Furniture, tools, or other useful items.",where:"Brooklyn, NY",region:"nyc",rank:10,lat:40.6782,lon:-73.9442,keywords:"website web design computer skill"},
-{title:"Guitar lessons",emoji:"🎼",type:"service",have:"Beginner acoustic guitar lessons.",want:"Camera equipment or photography help.",where:"Manhattan, NY",region:"nyc",rank:11,lat:40.7831,lon:-73.9712,keywords:"guitar lessons music teaching"}
-];
-const el=id=>document.getElementById(id),trim=id=>el(id).value.trim();
-const words=s=>s.toLowerCase().split(/[^a-z0-9]+/).filter(x=>x.length>1);
-const overlaps=(a,b)=>{const set=new Set(words(b));return words(a).some(x=>set.has(x));};
-const miles=(a,b)=>{const r=n=>n*Math.PI/180,dl=r(b.lat-a.lat),dn=r(b.lon-a.lon),h=Math.sin(dl/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dn/2)**2;return 3958.8*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h));};
-const typeName=t=>({item:"Things",service:"Services & Skills",skill:"Services & Skills",service_skill:"Services & Skills",space:"Rooms & Space"}[t]||"Things");
-async function geocode(q){
- const z=q.match(/^\d{5}$/);
- if(z){const r=await fetch("https://api.zippopotam.us/us/"+z[0]);if(!r.ok)throw Error("ZIP code not found");const p=(await r.json()).places?.[0];if(!p)throw Error("ZIP code not found");return {lat:+p.latitude,lon:+p.longitude,label:p["place name"]+", "+p["state abbreviation"]};}
- const parts=q.split(","),r=await fetch("https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(parts[0].trim())+"&count=10&language=en&format=json");
- if(!r.ok)throw Error("Could not look up that location");const hits=((await r.json()).results||[]).filter(x=>x.country_code==="US");if(!hits.length)throw Error("City not found. Try a US city or ZIP code.");
- const st=parts[1]?.trim().toLowerCase(),p=(st&&hits.find(x=>(x.admin1||"").toLowerCase().includes(st)))||hits[0];return {lat:p.latitude,lon:p.longitude,label:p.name+(p.admin1?", "+p.admin1:"")};
+"use strict";
+
+// Supabase browser credentials: the publishable key is intended for public frontend use.
+// Database access is protected by the Row Level Security policies installed in Supabase.
+const SUPABASE_URL = "https://hnhnfcmyzoupssrwdqzl.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_KmJwunh56Y6vIpcP1LFhNg_QJgDehiG";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+const el = id => document.getElementById(id);
+const trim = id => el(id).value.trim();
+const words = s => (s || "").toLowerCase().split(/[^a-z0-9]+/).filter(x => x.length > 1);
+const overlaps = (a, b) => {
+  const set = new Set(words(b));
+  return words(a).some(x => set.has(x));
+};
+const typeName = t => ({
+  item: "Things",
+  service_skill: "Services & Skills",
+  space: "Rooms & Space"
+}[t] || "Things");
+const escapeHTML = s => String(s ?? "").replace(/[&<>"']/g, ch => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[ch]));
+let currentUser = null;
+let currentListings = [];
+let locationCenter = null;
+
+async function geocode(q) {
+  const zip = q.match(/^\d{5}$/);
+  if (zip) {
+    const response = await fetch("https://api.zippopotam.us/us/" + zip[0]);
+    if (!response.ok) throw new Error("ZIP code not found.");
+    const place = (await response.json()).places?.[0];
+    if (!place) throw new Error("ZIP code not found.");
+    return {lat:+place.latitude, lon:+place.longitude, city:place["place name"], region:place["state abbreviation"], label:place["place name"]+", "+place["state abbreviation"], postal_code:zip[0]};
+  }
+  const parts = q.split(",");
+  const response = await fetch("https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(parts[0].trim())+"&count=10&language=en&format=json");
+  if (!response.ok) throw new Error("Could not look up that location.");
+  const hits = ((await response.json()).results || []).filter(x => x.country_code === "US");
+  if (!hits.length) throw new Error("City not found. Try a US city or ZIP code.");
+  const state = parts[1]?.trim().toLowerCase();
+  const place = (state && hits.find(x => (x.admin1 || "").toLowerCase().includes(state))) || hits[0];
+  return {lat:place.latitude, lon:place.longitude, city:place.name, region:place.admin1 || "", label:place.name+(place.admin1?", "+place.admin1:""), postal_code:""};
 }
-function card(p){return '<article class="listing"><div class="thumb">'+p.emoji+'</div><div><h3>'+p.title+'</h3><span class="category-tag">'+typeName(p.type)+'</span><p><b>Have / Offer:</b> '+p.have+'</p><p><b>Want:</b> '+(p.want||"Open to any offer")+'</p><div class="meta">⌖ '+p.where+' · Sample listing</div><button class="contact-link" type="button" data-contact="'+p.title.replace(/"/g,'&quot;')+'">Contact owner</button></div></article>';}
-async function render(filter=false){
- const scope="nyc",want=trim("wantInput"),have=trim("haveInput"),q=trim("locationInput"),radius=+el("distanceInput").value,category=el("categoryInput").value,btn=el("findMatches");btn.disabled=true;
- try{
-  const center=filter&&q?await geocode(q):null;
-  let list=products.filter(p=>{
-   if(category==="item"&&p.type!=="item")return false;
-   if(category==="service_skill"&&p.type!=="service"&&p.type!=="skill")return false;
-   if(category==="space"&&p.type!=="space")return false;
-   if(!center&&scope!=="nationwide"&&p.region!=="nyc"&&p.region!=="nearby")return false;
-   if(center&&miles(center,{lat:p.lat,lon:p.lon})>radius)return false;
-   return !filter||((!want||overlaps(want,p.have+" "+p.title+" "+p.keywords))&&(!have||!p.want.trim()||overlaps(have,p.want)));
+const miles = (a,b) => {
+  const rad=n=>n*Math.PI/180, dLat=rad(b.lat-a.lat), dLon=rad(b.lon-a.lon);
+  const h=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;
+  return 3958.8*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h));
+};
+
+function listingCard(item) {
+  const imagePath = item.listing_images?.[0]?.storage_path;
+  const imageUrl = imagePath ? supabase.storage.from("listing-photos").getPublicUrl(imagePath).data.publicUrl : "";
+  const owner = item.profiles?.display_name || item.profiles?.username || "SwapNGrab member";
+  const location = [item.city,item.region].filter(Boolean).join(", ") || "Location not provided";
+  const image = imageUrl
+    ? '<img class="listing-photo" src="'+escapeHTML(imageUrl)+'" alt="">'
+    : '<div class="thumb" aria-hidden="true">↻</div>';
+  return '<article class="listing">'+image+'<div class="listing-content">'+
+    '<h3>'+escapeHTML(item.title)+'</h3>'+
+    '<span class="category-tag">'+escapeHTML(typeName(item.listing_type))+'</span>'+
+    '<p><b>Have / Offer:</b> '+escapeHTML(item.have_text)+'</p>'+
+    '<p><b>Want:</b> '+escapeHTML(item.want_text || "Open to any offer")+'</p>'+
+    '<div class="meta">⌖ '+escapeHTML(location)+' · Posted by '+escapeHTML(owner)+'</div>'+
+    '</div></article>';
+}
+
+async function loadListings() {
+  const list = el("matchList");
+  list.innerHTML = '<p class="empty-state">Loading offers…</p>';
+  let result = await supabase.from("listings")
+    .select("*, listing_images(storage_path), profiles(display_name,username)")
+    .eq("status","active")
+    .order("created_at",{ascending:false});
+  // Fallback keeps browsing functional if the related profile/photo view is not yet cached.
+  if (result.error) {
+    result = await supabase.from("listings").select("*").eq("status","active").order("created_at",{ascending:false});
+  }
+  if (result.error) {
+    list.innerHTML = '<p class="empty-state">Could not load offers: '+escapeHTML(result.error.message)+'</p>';
+    el("matchCount").textContent = "Unavailable";
+    return;
+  }
+  currentListings = result.data || [];
+  renderListings(false);
+}
+
+function renderListings(applySearch) {
+  const want = trim("wantInput");
+  const have = trim("haveInput");
+  const category = el("categoryInput").value;
+  const radius = Number(el("distanceInput").value);
+  let list = currentListings.filter(item => {
+    if (category !== "all" && item.listing_type !== category) return false;
+    if (locationCenter && item.latitude != null && item.longitude != null &&
+        miles(locationCenter,{lat:item.latitude,lon:item.longitude}) > radius) return false;
+    if (locationCenter && (item.latitude == null || item.longitude == null)) return false;
+    if (applySearch && want && !overlaps(want,[item.title,item.have_text,(item.keywords||[]).join(" ")].join(" "))) return false;
+    if (applySearch && have && item.want_text && !overlaps(have,item.want_text)) return false;
+    return true;
   });
-  list.sort((a,b)=>center?miles(center,{lat:a.lat,lon:a.lon})-miles(center,{lat:b.lat,lon:b.lon}):a.rank-b.rank);
-  el("matchList").innerHTML=list.length?list.map(card).join(""):'<p class="empty-state">No matching offers found. Try All categories, a larger distance, or different search terms.</p>';
-  el("matchCount").textContent=list.length+" available offer"+(list.length===1?"":"s");
-  el("matchCaption").textContent=(category==="all"?"All categories":typeName(category)+" category")+" · "+(center?"within "+radius+" miles of "+center.label+" · nearest first":filter?"matching search results":"sample offers");
- }catch(e){el("matchList").innerHTML='<p class="empty-state">'+e.message+'. Please check the location and try again.</p>';el("matchCount").textContent="0 offers";el("matchCaption").textContent="Location search";}
- finally{btn.disabled=false;}
+  if (locationCenter) {
+    list.sort((a,b)=>miles(locationCenter,{lat:a.latitude,lon:a.longitude})-miles(locationCenter,{lat:b.latitude,lon:b.longitude}));
+  }
+  el("matchList").innerHTML = list.length
+    ? list.map(listingCard).join("")
+    : '<p class="empty-state">No offers found. Try a larger distance, ALL categories, or different search words.</p>';
+  el("matchCount").textContent = list.length+" offer"+(list.length===1?"":"s");
+  const categoryText = category==="all" ? "All categories" : typeName(category);
+  const locationText = locationCenter ? " · within "+radius+" miles of "+locationCenter.label : "";
+  el("matchCaption").textContent = categoryText+locationText+(applySearch?" · reciprocal matches":" · newest first");
 }
-el("findMatches").addEventListener("click",()=>render(true));
-el("categoryInput").addEventListener("change",()=>render(true));
-const categoryPicker=el("categoryPicker"),categoryToggle=el("categoryPickerToggle"),categoryMenu=el("categoryPickerMenu"),categoryLabel=el("categoryPickerLabel");
+
+async function findMatches() {
+  const button = el("findMatches");
+  button.disabled = true;
+  try {
+    const location = trim("locationInput");
+    locationCenter = location ? await geocode(location) : null;
+    renderListings(true);
+  } catch (error) {
+    el("matchList").innerHTML = '<p class="empty-state">'+escapeHTML(error.message)+'</p>';
+    el("matchCount").textContent = "0 offers";
+  } finally {
+    button.disabled = false;
+  }
+}
+
+const categoryPicker=el("categoryPicker");
+const categoryToggle=el("categoryPickerToggle");
+const categoryMenu=el("categoryPickerMenu");
+const categoryLabel=el("categoryPickerLabel");
 categoryToggle.addEventListener("click",()=>{
- const open=categoryMenu.hidden;
- categoryMenu.hidden=!open;
- categoryToggle.setAttribute("aria-expanded",String(open));
+  const open=categoryMenu.hidden;
+  categoryMenu.hidden=!open;
+  categoryToggle.setAttribute("aria-expanded",String(open));
 });
-categoryMenu.addEventListener("click",e=>{
- const option=e.target.closest("[data-value]");
- if(!option)return;
- const select=el("categoryInput");
- select.value=option.dataset.value;
- categoryLabel.textContent=option.querySelector("strong").textContent+" — "+option.querySelector("span").textContent;
- categoryMenu.querySelectorAll(".category-option").forEach(item=>{
-  const selected=item===option;
-  item.classList.toggle("selected",selected);
-  item.setAttribute("aria-selected",String(selected));
- });
- categoryMenu.hidden=true;
- categoryToggle.setAttribute("aria-expanded","false");
- select.dispatchEvent(new Event("change",{bubbles:true}));
-});
-document.addEventListener("click",e=>{
- if(!categoryPicker.contains(e.target)){
+categoryMenu.addEventListener("click",event=>{
+  const option=event.target.closest("[data-value]");
+  if(!option)return;
+  el("categoryInput").value=option.dataset.value;
+  categoryLabel.textContent=option.querySelector("strong").textContent+" — "+option.querySelector("span").textContent;
+  categoryMenu.querySelectorAll(".category-option").forEach(item=>{
+    const selected=item===option;
+    item.classList.toggle("selected",selected);
+    item.setAttribute("aria-selected",String(selected));
+  });
   categoryMenu.hidden=true;
   categoryToggle.setAttribute("aria-expanded","false");
- }
+  renderListings(false);
 });
-categoryPicker.addEventListener("keydown",e=>{
- if(e.key==="Escape"){
-  categoryMenu.hidden=true;
-  categoryToggle.setAttribute("aria-expanded","false");
-  categoryToggle.focus();
- }
+document.addEventListener("click",event=>{
+  if(!categoryPicker.contains(event.target)){
+    categoryMenu.hidden=true;
+    categoryToggle.setAttribute("aria-expanded","false");
+  }
 });
-["wantInput","haveInput","locationInput"].forEach(id=>el(id).addEventListener("keydown",e=>{if(e.key==="Enter")render(true)}));
-render(false);
-document.querySelectorAll("[data-login]").forEach(b=>b.addEventListener("click",()=>el("loginDialog").showModal()));
-el("loginDialog").querySelector("form").addEventListener("submit",e=>{e.preventDefault();el("loginDialog").close()});
-const contactDialog=el("contactDialog");
-el("matchList").addEventListener("click",e=>{
- const button=e.target.closest("[data-contact]");
- if(!button)return;
- el("contactListingTitle").textContent="Regarding: "+button.dataset.contact;
- contactDialog.showModal();
+categoryPicker.addEventListener("keydown",event=>{
+  if(event.key==="Escape"){categoryMenu.hidden=true;categoryToggle.setAttribute("aria-expanded","false");categoryToggle.focus();}
 });
-el("closeContact").addEventListener("click",()=>contactDialog.close());
-el("contactForm").addEventListener("submit",e=>e.preventDefault());
+el("findMatches").addEventListener("click",findMatches);
+["wantInput","haveInput"].forEach(id=>el(id).addEventListener("keydown",event=>{if(event.key==="Enter")findMatches();}));
+el("locationInput").addEventListener("keydown",event=>{if(event.key==="Enter")findMatches();});
+
+function setAuthMode(signup) {
+  el("authTitle").textContent = signup ? "Create your SwapNGrab account" : "Log in to SwapNGrab";
+  el("authIntro").textContent = signup ? "Create a free account to post and manage offers." : "Sign in to manage your offers.";
+  el("displayNameWrap").hidden = !signup;
+  el("authDisplayName").required = signup;
+  el("authPassword").autocomplete = signup ? "new-password" : "current-password";
+  el("authSubmit").textContent = signup ? "Create account" : "Log in";
+  el("authModeToggle").textContent = signup ? "Already have an account? Log in" : "Create a new account";
+  el("authMessage").textContent = "";
+  el("authForm").dataset.mode = signup ? "signup" : "login";
+}
+function updateAccountUI() {
+  const label = currentUser ? "Log out" : "Log in / Create account";
+  document.querySelectorAll("[data-login]").forEach(button=>button.textContent=label);
+  el("postOfferButton").textContent = currentUser ? "Post my offer" : "Log in to post offer";
+  el("postMessage").textContent = currentUser
+    ? "You are signed in. Your offer will be published after you submit it."
+    : "Create an account or log in to post an offer.";
+}
+function openAuth() {
+  setAuthMode(false);
+  el("loginDialog").showModal();
+}
+document.querySelectorAll("[data-login]").forEach(button=>button.addEventListener("click",async()=>{
+  if(currentUser){
+    await supabase.auth.signOut();
+  } else openAuth();
+}));
+el("closeAuth").addEventListener("click",()=>el("loginDialog").close());
+el("authModeToggle").addEventListener("click",()=>setAuthMode(el("authForm").dataset.mode!=="signup"));
+el("authForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  const signup=el("authForm").dataset.mode==="signup";
+  const email=trim("authEmail");
+  const password=el("authPassword").value;
+  const submit=el("authSubmit");
+  submit.disabled=true;
+  el("authMessage").textContent=signup?"Creating account…":"Signing in…";
+  try {
+    const response=signup
+      ? await supabase.auth.signUp({email,password,options:{data:{display_name:trim("authDisplayName")}}})
+      : await supabase.auth.signInWithPassword({email,password});
+    if(response.error) throw response.error;
+    if(signup && !response.data.session) {
+      el("authMessage").textContent="Account created. Check your email for the confirmation link, then log in.";
+    } else {
+      el("authMessage").textContent="You are signed in.";
+      el("loginDialog").close();
+    }
+  } catch(error) {
+    el("authMessage").textContent=error.message || "Could not complete sign-in.";
+  } finally { submit.disabled=false; }
+});
+
+async function postOffer() {
+  if(!currentUser){openAuth();return;}
+  const title=trim("postTitle"),have=trim("postHave"),want=trim("postWant"),location=trim("postLocation");
+  if(!title||!have){el("postMessage").textContent="Please enter an offer title and what you have or can offer.";return;}
+  const button=el("postOfferButton");
+  button.disabled=true;
+  el("postMessage").textContent="Saving your offer…";
+  try {
+    let place=null;
+    if(location){try{place=await geocode(location);}catch(_){place={city:location,region:"",postal_code:"",lat:null,lon:null};}}
+    const payload={
+      owner_id:currentUser.id,
+      title,
+      listing_type:el("postType").value,
+      have_text:have,
+      want_text:want || null,
+      city:place?.city || null,
+      region:place?.region || null,
+      postal_code:place?.postal_code || (/^\d{5}$/.test(location)?location:null),
+      latitude:place?.lat ?? null,
+      longitude:place?.lon ?? null,
+      status:"active"
+    };
+    const {data,error}=await supabase.from("listings").insert(payload).select("id").single();
+    if(error)throw error;
+    const files=Array.from(el("postPhotos").files || []);
+    for(const file of files){
+      if(!["image/jpeg","image/png","image/webp"].includes(file.type))continue;
+      if(file.size>5*1024*1024)continue;
+      const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+      const path=currentUser.id+"/"+data.id+"/"+crypto.randomUUID()+"-"+safeName;
+      const upload=await supabase.storage.from("listing-photos").upload(path,file,{contentType:file.type,upsert:false});
+      if(upload.error)throw upload.error;
+      const imageRow=await supabase.from("listing_images").insert({listing_id:data.id,owner_id:currentUser.id,storage_path:path});
+      if(imageRow.error)throw imageRow.error;
+    }
+    ["postTitle","postHave","postWant","postLocation"].forEach(id=>el(id).value="");
+    el("postPhotos").value="";
+    el("postMessage").textContent="Your offer is now posted.";
+    await loadListings();
+  } catch(error) {
+    el("postMessage").textContent="Could not post offer: "+(error.message || "Please try again.");
+  } finally {button.disabled=false;}
+}
+el("postOfferButton").addEventListener("click",postOffer);
+
+supabase.auth.onAuthStateChange((_event,session)=>{
+  currentUser=session?.user || null;
+  updateAccountUI();
+});
+(async()=>{
+  const {data}=await supabase.auth.getSession();
+  currentUser=data.session?.user || null;
+  updateAccountUI();
+  await loadListings();
+})();
 })();
