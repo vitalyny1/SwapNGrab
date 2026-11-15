@@ -14,11 +14,6 @@ const overlaps = (a, b) => {
   const set = new Set(words(b));
   return words(a).some(x => set.has(x));
 };
-const typeName = t => ({
-  item: "Things",
-  service_skill: "Services & Skills",
-  space: "Rooms & Space"
-}[t] || "Things");
 const escapeHTML = s => String(s ?? "").replace(/[&<>"']/g, ch => ({
   "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
 }[ch]));
@@ -107,7 +102,6 @@ function listingCard(item) {
     ? '<img class="listing-photo" src="'+escapeHTML(imageUrl)+'" alt="">'
     : '<div class="thumb" aria-hidden="true">↻</div>';
   return '<article class="listing">'+image+'<div class="listing-content">'+
-    '<span class="category-tag">'+escapeHTML(typeName(item.listing_type))+'</span>'+
     '<p><b>Have / Offer:</b> '+escapeHTML(item.have_text)+'</p>'+
     '<p><b>Want:</b> '+escapeHTML(item.want_text || "Open to any offer")+'</p>'+
     '<div class="meta">⌖ '+escapeHTML(location)+' · Posted by '+escapeHTML(owner)+'</div>'+
@@ -160,11 +154,9 @@ function renderMyOffers() {
 function renderListings(applySearch) {
   const want = trim("wantInput");
   const have = trim("haveInput");
-  const category = el("categoryInput").value;
   const radius = Number(el("distanceInput").value);
   let list = currentListings.filter(item => {
     if (currentUser && item.owner_id === currentUser.id) return false;
-    if (category !== "all" && item.listing_type !== category) return false;
     // Keep offers with unknown locations in the results; distance can only
     // exclude listings when their coordinates are known.
     if (locationCenter && item.latitude != null && item.longitude != null &&
@@ -183,9 +175,8 @@ function renderListings(applySearch) {
     ? list.map(listingCard).join("")
     : '<p class="empty-state">No offers found. Try a larger distance, ALL categories, or different search words.</p>';
   el("matchCount").textContent = list.length+" offer"+(list.length===1?"":"s");
-  const categoryText = category==="all" ? "All categories" : typeName(category);
   const locationText = locationCenter ? " · within "+radius+" miles of "+locationCenter.label : "";
-  el("matchCaption").textContent = categoryText+locationText+(applySearch?" · reciprocal matches":" · newest first");
+  el("matchCaption").textContent = (locationText ? locationText.slice(3) : "All offers")+(applySearch?" · reciprocal matches":" · newest first");
 }
 
 async function findMatches() {
@@ -203,38 +194,6 @@ async function findMatches() {
   }
 }
 
-const categoryPicker=el("categoryPicker");
-const categoryToggle=el("categoryPickerToggle");
-const categoryMenu=el("categoryPickerMenu");
-const categoryLabel=el("categoryPickerLabel");
-categoryToggle.addEventListener("click",()=>{
-  const open=categoryMenu.hidden;
-  categoryMenu.hidden=!open;
-  categoryToggle.setAttribute("aria-expanded",String(open));
-});
-categoryMenu.addEventListener("click",event=>{
-  const option=event.target.closest("[data-value]");
-  if(!option)return;
-  el("categoryInput").value=option.dataset.value;
-  categoryLabel.textContent=option.querySelector("strong").textContent+" — "+option.querySelector("span").textContent;
-  categoryMenu.querySelectorAll(".category-option").forEach(item=>{
-    const selected=item===option;
-    item.classList.toggle("selected",selected);
-    item.setAttribute("aria-selected",String(selected));
-  });
-  categoryMenu.hidden=true;
-  categoryToggle.setAttribute("aria-expanded","false");
-  renderListings(false);
-});
-document.addEventListener("click",event=>{
-  if(!categoryPicker.contains(event.target)){
-    categoryMenu.hidden=true;
-    categoryToggle.setAttribute("aria-expanded","false");
-  }
-});
-categoryPicker.addEventListener("keydown",event=>{
-  if(event.key==="Escape"){categoryMenu.hidden=true;categoryToggle.setAttribute("aria-expanded","false");categoryToggle.focus();}
-});
 el("findMatches").addEventListener("click",findMatches);
 ["wantInput","haveInput"].forEach(id=>el(id).addEventListener("keydown",event=>{if(event.key==="Enter")findMatches();}));
 el("locationInput").addEventListener("keydown",event=>{if(event.key==="Enter")findMatches();});
@@ -314,7 +273,6 @@ async function postOffer() {
     if(location){try{place=await geocode(location);}catch(_){place={city:location,region:"",postal_code:"",lat:null,lon:null};}}
     const payload={
       owner_id:currentUser.id,
-      listing_type:el("postType").value,
       have_text:have,
       want_text:want || null,
       city:place?.city || null,
