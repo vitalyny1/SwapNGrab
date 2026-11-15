@@ -137,6 +137,7 @@ function listingCard(item, showActions = false) {
     ? '<img class="listing-photo" src="'+escapeHTML(imageUrl)+'" alt="">'
     : '<div class="thumb" aria-hidden="true">↻</div>';
   return '<article class="listing">'+image+'<div class="listing-content">'+
+    '<div class="offer-id">ID: '+escapeHTML(item.public_id || "ID pending")+'</div>'+
     '<p><b>Have / Offer:</b> '+escapeHTML(item.have_text)+'</p>'+
     '<p><b>Want:</b> '+escapeHTML(item.want_text || "Open to any offer")+'</p>'+
     '<div class="meta">⌖ '+escapeHTML(location)+' · Posted by '+escapeHTML(owner)+'</div>'+
