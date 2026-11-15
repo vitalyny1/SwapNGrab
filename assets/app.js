@@ -49,7 +49,7 @@ const miles = (a,b) => {
 // Free semantic matching runs in the visitor's browser. The model is downloaded
 // once and cached by the browser; no listing text is sent to an AI API.
 let embeddingPipelinePromise = null;
-const AI_MATCH_THRESHOLD = 0.32;
+const AI_MATCH_THRESHOLD = 0.45;
 async function getEmbeddingPipeline() {
   if (!embeddingPipelinePromise) {
     embeddingPipelinePromise = (async () => {
