@@ -46,6 +46,41 @@ const miles = (a,b) => {
   return 3958.8*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h));
 };
 
+// Free semantic matching runs in the visitor's browser. The model is downloaded
+// once and cached by the browser; no listing text is sent to an AI API.
+let embeddingPipelinePromise = null;
+const AI_MATCH_THRESHOLD = 0.32;
+async function getEmbeddingPipeline() {
+  if (!embeddingPipelinePromise) {
+    embeddingPipelinePromise = (async () => {
+      const { pipeline } = await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2");
+      return pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
+    })().catch(error => {
+      embeddingPipelinePromise = null;
+      throw error;
+    });
+  }
+  return embeddingPipelinePromise;
+}
+async function getAiMatchScores(want, have, items) {
+  const texts = [want || " ", have || " "];
+  items.forEach(item => texts.push(item.have_text || " "));
+  items.forEach(item => texts.push(item.want_text || "open to any offer"));
+  const extractor = await getEmbeddingPipeline();
+  const result = await extractor(texts, { pooling: "mean", normalize: true });
+  const vectors = result.tolist();
+  const dot = (a,b) => a.reduce((sum,value,index)=>sum+value*b[index],0);
+  const scores = new Map();
+  items.forEach((item,index) => {
+    const wantScore = want ? dot(vectors[0],vectors[2+index]) : 1;
+    const haveScore = have
+      ? (item.want_text ? dot(vectors[1],vectors[2+items.length+index]) : 1)
+      : 1;
+    scores.set(item.id, want && have ? Math.min(wantScore,haveScore) : (want ? wantScore : haveScore));
+  });
+  return scores;
+}
+
 
 
 // Drag either divider to resize the four desktop panels.
@@ -151,7 +186,7 @@ function renderMyOffers() {
     : '<p class="empty-state">You have not posted any offers yet.</p>';
 }
 
-function renderListings(applySearch) {
+function renderListings(applySearch, aiScores = null, matchMode = "") {
   const want = trim("wantInput");
   const have = trim("haveInput");
   const radius = Number(el("distanceInput").value);
@@ -161,14 +196,20 @@ function renderListings(applySearch) {
     // exclude listings when their coordinates are known.
     if (locationCenter && item.latitude != null && item.longitude != null &&
         miles(locationCenter,{lat:item.latitude,lon:item.longitude}) > radius) return false;
-    if (applySearch && want && !overlaps(want,[item.have_text,(item.keywords||[]).join(" ")].join(" "))) return false;
-    if (applySearch && have && item.want_text && !overlaps(have,item.want_text)) return false;
+    if (applySearch && aiScores) {
+      if ((aiScores.get(item.id) ?? -1) < AI_MATCH_THRESHOLD) return false;
+    } else {
+      if (applySearch && want && !overlaps(want,[item.have_text,(item.keywords||[]).join(" ")].join(" "))) return false;
+      if (applySearch && have && item.want_text && !overlaps(have,item.want_text)) return false;
+    }
     return true;
   });
-  if (locationCenter) {
-    const distanceFor = item => item.latitude != null && item.longitude != null
-      ? miles(locationCenter,{lat:item.latitude,lon:item.longitude})
-      : Infinity;
+  const distanceFor = item => locationCenter && item.latitude != null && item.longitude != null
+    ? miles(locationCenter,{lat:item.latitude,lon:item.longitude})
+    : Infinity;
+  if (aiScores) {
+    list.sort((a,b)=>(aiScores.get(b.id)||0)-(aiScores.get(a.id)||0) || distanceFor(a)-distanceFor(b));
+  } else if (locationCenter) {
     list.sort((a,b)=>distanceFor(a)-distanceFor(b));
   }
   el("matchList").innerHTML = list.length
@@ -176,7 +217,8 @@ function renderListings(applySearch) {
     : '<p class="empty-state">No offers found. Try a larger distance, ALL categories, or different search words.</p>';
   el("matchCount").textContent = list.length+" offer"+(list.length===1?"":"s");
   const locationText = locationCenter ? " · within "+radius+" miles of "+locationCenter.label : "";
-  el("matchCaption").textContent = (locationText ? locationText.slice(3) : "All offers")+(applySearch?" · reciprocal matches":" · newest first");
+  el("matchCaption").textContent = (locationText ? locationText.slice(3) : "All offers")+
+    (applySearch ? (matchMode==="ai" ? " · AI semantic matches" : matchMode==="fallback" ? " · keyword matches (AI unavailable)" : " · reciprocal matches") : " · newest first");
 }
 
 async function findMatches() {
@@ -184,8 +226,22 @@ async function findMatches() {
   button.disabled = true;
   try {
     const location = trim("locationInput");
+    const want = trim("wantInput");
+    const have = trim("haveInput");
     locationCenter = location ? await geocode(location) : null;
-    renderListings(true);
+    if (want || have) {
+      el("matchCaption").textContent = "Loading free AI matching model…";
+      try {
+        const candidates = currentListings.filter(item => !currentUser || item.owner_id !== currentUser.id);
+        const aiScores = await getAiMatchScores(want,have,candidates);
+        renderListings(true,aiScores,"ai");
+      } catch (aiError) {
+        console.warn("AI matching unavailable; using keyword matching.",aiError);
+        renderListings(true,null,"fallback");
+      }
+    } else {
+      renderListings(true);
+    }
   } catch (error) {
     el("matchList").innerHTML = '<p class="empty-state">'+escapeHTML(error.message)+'</p>';
     el("matchCount").textContent = "0 offers";
