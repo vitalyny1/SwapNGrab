@@ -25,20 +25,6 @@
     <p class="field-help">Leave blank if you have no preference — this will not limit your matches.</p>
     <label for="haveInput">I HAVE TO TRADE</label>
     <input id="haveInput" placeholder="e.g. comic books, tools, lessons">
-    <label for="categoryInput">BROWSE CATEGORY</label>
-    <div class="category-picker" id="categoryPicker">
-      <button type="button" class="category-picker-toggle" id="categoryPickerToggle" aria-haspopup="listbox" aria-expanded="false">
-        <span id="categoryPickerLabel">ALL — Browse every offer.</span><span aria-hidden="true">▾</span>
-      </button>
-      <div class="category-picker-menu" id="categoryPickerMenu" role="listbox" aria-label="Browse category" hidden>
-        <button type="button" class="category-option selected" role="option" aria-selected="true" data-value="all"><strong>ALL</strong><span>Browse every offer.</span></button>
-        <button type="button" class="category-option" role="option" aria-selected="false" data-value="item"><strong>Things</strong><span>Physical items such as furniture, cars, electronics, and clothes.</span></button>
-        <button type="button" class="category-option" role="option" aria-selected="false" data-value="service_skill"><strong>Services &amp; Skills</strong><span>Work, help, and knowledge such as repairs, lessons, and computer help.</span></button>
-        <button type="button" class="category-option" role="option" aria-selected="false" data-value="space"><strong>Rooms &amp; Space</strong><span>Places such as rooms, parking, and storage.</span></button>
-        <p class="category-menu-note">Offers can match across categories.</p>
-      </div>
-      <input type="hidden" id="categoryInput" class="category-value" value="all">
-    </div>
     <div class="location-distance-row">
       <div class="location-field">
         <label for="locationInput">LOCATION</label>
@@ -56,8 +42,6 @@
   <section class="post-panel grid-post">
     <h2>TO POST YOUR OFFER</h2>
     <p class="intro">Have an item, service, skill, or something else to exchange? Add your offer.</p>
-    <label for="postType">CATEGORY</label>
-    <select id="postType" class="field-select"><option value="item">Things</option><option value="service_skill">Services &amp; Skills</option><option value="space">Rooms &amp; Space</option></select>
     <label for="postHave">I HAVE / I OFFER</label>
     <textarea id="postHave" rows="2" placeholder="Describe what you have or what you can offer"></textarea>
     <label for="postWant">I WANT</label>
