@@ -193,7 +193,8 @@ function renderListings(applySearch, aiScores = null, matchMode = "") {
   const have = trim("haveInput");
   const radius = Number(el("distanceInput").value);
   let list = currentListings.filter(item => {
-    if (currentUser && item.owner_id === currentUser.id) return false;
+    if (currentUser && String(item.owner_id) === String(currentUser.id)) return false;
+    if (myListings.some(own => String(own.id) === String(item.id))) return false;
     // Keep offers with unknown locations in the results; distance can only
     // exclude listings when their coordinates are known.
     if (locationCenter && item.latitude != null && item.longitude != null &&
