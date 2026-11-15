@@ -334,9 +334,13 @@ async function editMyOffer(id) {
   if(button)button.disabled=true;
   try {
     let place=null;
-    if(location.trim() && location.trim()!==oldLocation) {
-      try { place=await geocode(location.trim()); }
-      catch(_) { place={city:location.trim(),region:"",postal_code:/^\\d{5}$/.test(location.trim())?location.trim():"",lat:null,lon:null}; }
+    if(location.trim()!==oldLocation) {
+      if(location.trim()) {
+        try { place=await geocode(location.trim()); }
+        catch(_) { place={city:location.trim(),region:"",postal_code:/^\d{5}$/.test(location.trim())?location.trim():"",lat:null,lon:null}; }
+      } else {
+        place={city:null,region:null,postal_code:null,lat:null,lon:null};
+      }
     }
     const changes={
       have_text:have.trim(),
