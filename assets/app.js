@@ -128,7 +128,7 @@ async function getAiMatchScores(want, have, items) {
   });
 })();
 
-function listingCard(item) {
+function listingCard(item, showActions = false) {
   const imagePath = item.listing_images?.[0]?.storage_path;
   const imageUrl = imagePath ? supabase.storage.from("listing-photos").getPublicUrl(imagePath).data.publicUrl : "";
   const owner = item.profiles?.display_name || item.profiles?.username || "SwapNGrab member";
@@ -140,6 +140,7 @@ function listingCard(item) {
     '<p><b>Have / Offer:</b> '+escapeHTML(item.have_text)+'</p>'+
     '<p><b>Want:</b> '+escapeHTML(item.want_text || "Open to any offer")+'</p>'+
     '<div class="meta">⌖ '+escapeHTML(location)+' · Posted by '+escapeHTML(owner)+'</div>'+
+    (showActions ? '<div class="offer-actions"><button type="button" class="plain-button" data-offer-action="edit" data-offer-id="'+escapeHTML(item.id)+'">EDIT</button> <button type="button" class="plain-button" data-offer-action="delete" data-offer-id="'+escapeHTML(item.id)+'">DELETE</button></div>' : '')+
     '</div></article>';
 }
 
@@ -182,7 +183,7 @@ function renderMyOffers() {
   if(!currentUser)return;
   el("myOfferCount").textContent=myListings.length+" offer"+(myListings.length===1?"":"s");
   el("myOfferList").innerHTML=myListings.length
-    ? myListings.map(listingCard).join("")
+    ? myListings.map(item=>listingCard(item,true)).join("")
     : '<p class="empty-state">You have not posted any offers yet.</p>';
 }
 
@@ -315,6 +316,79 @@ el("authForm").addEventListener("submit",async event=>{
   } catch(error) {
     el("authMessage").textContent=error.message || "Could not complete sign-in.";
   } finally { submit.disabled=false; }
+});
+
+
+async function editMyOffer(id) {
+  const item = myListings.find(listing=>listing.id===id);
+  if(!item)return;
+  const have=window.prompt("I HAVE / I OFFER:",item.have_text || "");
+  if(have===null)return;
+  if(!have.trim()){window.alert("Please describe what you have or can offer.");return;}
+  const want=window.prompt("I WANT (leave blank if open to any offer):",item.want_text || "");
+  if(want===null)return;
+  const oldLocation=[item.city,item.region].filter(Boolean).join(", ") || item.postal_code || "";
+  const location=window.prompt("LOCATION (city or ZIP code):",oldLocation);
+  if(location===null)return;
+  const button=el("myOfferList").querySelector('[data-offer-id="'+CSS.escape(id)+'"][data-offer-action="edit"]');
+  if(button)button.disabled=true;
+  try {
+    let place=null;
+    if(location.trim() && location.trim()!==oldLocation) {
+      try { place=await geocode(location.trim()); }
+      catch(_) { place={city:location.trim(),region:"",postal_code:/^\\d{5}$/.test(location.trim())?location.trim():"",lat:null,lon:null}; }
+    }
+    const changes={
+      have_text:have.trim(),
+      want_text:want.trim() || null
+    };
+    if(place) {
+      Object.assign(changes,{
+        city:place.city || null,
+        region:place.region || null,
+        postal_code:place.postal_code || null,
+        latitude:place.lat ?? null,
+        longitude:place.lon ?? null
+      });
+    }
+    const {error}=await supabase.from("listings").update(changes).eq("id",id).eq("owner_id",currentUser.id);
+    if(error)throw error;
+    el("postNote").textContent="Your offer has been updated.";
+    await loadListings();
+  } catch(error) {
+    window.alert("Could not update offer: "+(error.message || "Please try again."));
+    if(button)button.disabled=false;
+  }
+}
+
+async function deleteMyOffer(id) {
+  const item=myListings.find(listing=>listing.id===id);
+  if(!item)return;
+  if(!window.confirm("Delete this offer? This cannot be undone."))return;
+  const button=el("myOfferList").querySelector('[data-offer-id="'+CSS.escape(id)+'"][data-offer-action="delete"]');
+  if(button)button.disabled=true;
+  try {
+    const {error}=await supabase.from("listings").delete().eq("id",id).eq("owner_id",currentUser.id);
+    if(error)throw error;
+    const paths=(item.listing_images || []).map(photo=>photo.storage_path).filter(Boolean);
+    if(paths.length) {
+      const cleanup=await supabase.storage.from("listing-photos").remove(paths);
+      if(cleanup.error)console.warn("Offer deleted, but photo cleanup failed:",cleanup.error);
+    }
+    el("postNote").textContent="Your offer has been deleted.";
+    await loadListings();
+  } catch(error) {
+    window.alert("Could not delete offer: "+(error.message || "Please try again."));
+    if(button)button.disabled=false;
+  }
+}
+
+el("myOfferList").addEventListener("click",event=>{
+  const button=event.target.closest("[data-offer-action]");
+  if(!button || !currentUser)return;
+  const id=button.dataset.offerId;
+  if(button.dataset.offerAction==="edit")editMyOffer(id);
+  if(button.dataset.offerAction==="delete")deleteMyOffer(id);
 });
 
 async function postOffer() {
