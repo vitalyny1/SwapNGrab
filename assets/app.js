@@ -215,7 +215,7 @@ function renderListings(applySearch, aiScores = null, matchMode = "") {
     list.sort((a,b)=>distanceFor(a)-distanceFor(b));
   }
   el("matchList").innerHTML = list.length
-    ? list.map(listingCard).join("")
+    ? list.map(item=>listingCard(item,false)).join("")
     : '<p class="empty-state">No offers found. Try a larger distance, ALL categories, or different search words.</p>';
   el("matchCount").textContent = list.length+" offer"+(list.length===1?"":"s");
   const locationText = locationCenter ? " · within "+radius+" miles of "+locationCenter.label : "";
