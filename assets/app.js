@@ -63,18 +63,33 @@ async function getEmbeddingPipeline() {
   return embeddingPipelinePromise;
 }
 async function getAiMatchScores(want, have, items) {
-  const texts = [want || " ", have || " "];
+  // Treat words and comma/OR-separated phrases as alternatives. Keep the full
+  // phrase too, so multi-word concepts such as "golf clubs" can still match.
+  const alternatives = value => {
+    if (!value) return [];
+    const parts = [value, ...value.split(/\\s*(?:,|\\bor\\b)\\s*/i)];
+    value.split(/[^a-z0-9]+/i).filter(word => word.length > 1).forEach(word => parts.push(word));
+    return [...new Set(parts.map(part => part.trim()).filter(Boolean))];
+  };
+  const wantTerms = alternatives(want);
+  const haveTerms = alternatives(have);
+  const texts = [...wantTerms, ...haveTerms];
   items.forEach(item => texts.push(item.have_text || " "));
   items.forEach(item => texts.push(item.want_text || "open to any offer"));
   const extractor = await getEmbeddingPipeline();
   const result = await extractor(texts, { pooling: "mean", normalize: true });
   const vectors = result.tolist();
   const dot = (a,b) => a.reduce((sum,value,index)=>sum+value*b[index],0);
+  const bestScore = (terms, offset, target) => terms.length
+    ? Math.max(...terms.map((_,i)=>dot(vectors[offset+i],target)))
+    : 1;
   const scores = new Map();
+  const haveOffset = wantTerms.length + haveTerms.length;
+  const wantListingsOffset = haveOffset + items.length;
   items.forEach((item,index) => {
-    const wantScore = want ? dot(vectors[0],vectors[2+index]) : 1;
+    const wantScore = want ? bestScore(wantTerms,0,vectors[haveOffset+index]) : 1;
     const haveScore = have
-      ? (item.want_text ? dot(vectors[1],vectors[2+items.length+index]) : 1)
+      ? (item.want_text ? bestScore(haveTerms,wantTerms.length,vectors[wantListingsOffset+index]) : 1)
       : 1;
     scores.set(item.id, want && have ? Math.min(wantScore,haveScore) : (want ? wantScore : haveScore));
   });
