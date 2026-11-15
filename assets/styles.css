@@ -36,132 +36,28 @@ footer{display:flex;gap:18px;align-items:center;border-top:1px solid #ccc;backgr
 .header-account{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13px}.header-account .login-link{font-size:14px;text-decoration:underline}.account-note{display:none}
 @media(max-width:700px){.topbar{height:auto;align-items:flex-start;flex-wrap:wrap}.header-account{margin-left:0;width:100%;justify-content:flex-end;flex-wrap:wrap;gap:5px 12px}.header-account span{font-size:12px}}
 .field-help{font-size:11px;color:#555;line-height:1.4;margin:5px 0 0}.search-panel .field-help{margin-top:5px}
-/* Search and posting are separate bordered boxes stacked in the left column. */
 .search-panel{display:block;border:2px solid #888!important;background:#fafafa;padding:16px 14px;margin:0 0 20px;border-radius:2px}
 .post-panel{border:2px solid #888!important;background:#fafafa}
 .field-select{width:100%;height:36px;border:1px solid #aaa;padding:7px 9px;font:14px Arial;border-radius:2px;background:#fff;color:#222}
 .category-tag{display:inline-block;font-size:11px;color:#333;background:#eef3f8;border:1px solid #c7d5e2;padding:3px 7px;margin:0 0 5px;border-radius:2px}
 .post-panel .field-select{display:block}
 @media(max-width:700px){.want-panel{padding:0}}
-
-/* Make the two left-hand boxes together match the full height of MATCHING OFFERS. */
-@media(min-width:701px){
-  .two-panel{height:min(760px,calc(100vh - 145px));min-height:0;align-items:stretch}
-  .want-panel{
-    height:100%;min-height:0;min-width:0;
-    display:grid;grid-template-rows:minmax(0,1.5fr) minmax(0,.5fr);
-    gap:14px;overflow:hidden;
-  }
-  .search-panel,.post-panel{
-    min-height:0;height:100%;margin:0;
-    overflow-y:auto;overflow-x:hidden;
-  }
-  .matches-panel{
-    height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;
-  }
-  .matches-heading{flex:0 0 auto}
-  .listing-list{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
-}
-@media(max-width:700px){
-  .two-panel{height:auto;min-height:0;align-items:start}
-  .want-panel{height:auto;max-height:none;display:block;overflow:visible}
-  .search-panel,.post-panel{height:auto;min-height:0;overflow:visible}
-  .post-panel{margin-top:20px}
-  .matches-panel{height:auto;max-height:65vh;display:flex;flex-direction:column;overflow:hidden}
-  .listing-list{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden}
-}
-
-/* Keep location and distance controls side by side. */
-.location-distance-row{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(105px,1fr);gap:10px;align-items:end}
-.location-distance-row .location-field,.location-distance-row .distance-field{min-width:0}
-.location-distance-row label{margin-top:15px}
-.location-distance-row input,.location-distance-row select{width:100%;min-width:0}
-
+@media(min-width:701px){.two-panel{height:min(760px,calc(100vh - 145px));min-height:0;align-items:stretch}.want-panel{height:100%;min-height:0;min-width:0;display:grid;grid-template-rows:minmax(0,1.5fr) minmax(0,.5fr);gap:14px;overflow:hidden}.search-panel,.post-panel{min-height:0;height:100%;margin:0;overflow-y:auto;overflow-x:hidden}.matches-panel{height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden}.matches-heading{flex:0 0 auto}.listing-list{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}}
+@media(max-width:700px){.two-panel{height:auto;min-height:0;align-items:start}.want-panel{height:auto;max-height:none;display:block;overflow:visible}.search-panel,.post-panel{height:auto;min-height:0;overflow:visible}.post-panel{margin-top:20px}.matches-panel{height:auto;max-height:65vh;display:flex;flex-direction:column;overflow:hidden}.listing-list{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden}}
+.location-distance-row{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(105px,1fr);gap:10px;align-items:end}.location-distance-row .location-field,.location-distance-row .distance-field{min-width:0}.location-distance-row label{margin-top:15px}.location-distance-row input,.location-distance-row select{width:100%;min-width:0}
 .category-menu-note{margin:0;padding:9px;background:#f7f7f7;border-top:1px solid #ddd;font-size:11px;line-height:1.4;color:#555}
-
-/* Posting form: location and optional photos share one row. */
-.post-location-photos-row{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:10px;align-items:end}
-.post-location-photos-row>div{min-width:0}
-.post-location-photos-row label{margin-top:13px}
-.post-location-photos-row input{width:100%;min-width:0}
-.post-location-photos-row .photo-input{height:36px;padding:7px 0}
+.post-location-photos-row{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:10px;align-items:end}.post-location-photos-row>div{min-width:0}.post-location-photos-row label{margin-top:13px}.post-location-photos-row input{width:100%;min-width:0}.post-location-photos-row .photo-input{height:36px;padding:7px 0}
 @media(max-width:420px){.post-location-photos-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px}.post-location-photos-row .photo-input{font-size:10px}}
-
-
-/* Live database listing cards and account feedback. */
-.listing-photo{width:76px;height:76px;object-fit:cover;border:1px solid #ddd;background:#f5f5f5}
-.listing-content{min-width:0}
-#authMessage{min-height:18px;line-height:1.4;color:#444}
-#authForm .login-link{display:block;margin:12px auto 0;text-decoration:underline}
-#authForm label[hidden]{display:none}
-.post-panel .post-note{overflow-wrap:anywhere}
+.listing-photo{width:76px;height:76px;object-fit:cover;border:1px solid #ddd;background:#f5f5f5}.listing-content{min-width:0}#authMessage{min-height:18px;line-height:1.4;color:#444}#authForm .login-link{display:block;margin:12px auto 0;text-decoration:underline}#authForm label[hidden]{display:none}.post-panel .post-note{overflow-wrap:anywhere}
 @media(max-width:700px){.listing-photo{width:58px;height:58px}}
-
-/* Keep the offer action above panel content and reliably clickable. */
-#postOfferButton{position:relative;z-index:2;pointer-events:auto;cursor:pointer}
-#postOfferButton:disabled{opacity:.65;cursor:wait}
-
-/* Separate personal offers from the public matching results. */
-.right-column{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0;height:100%}
-.my-offers-panel{border:1px solid #aaa;background:#fff;min-height:0;overflow:hidden;flex:0 0 auto}
-.my-offers-panel[hidden]{display:none}
-.my-offers-panel .matches-heading{padding:10px 14px}
-.my-offers-panel .matches-heading h2{font-size:17px}
-.my-offers-panel .listing-list{max-height:190px;overflow-y:auto}
-.right-column .matches-panel{flex:1 1 auto;min-height:0}
-@media(max-width:700px){
-  .right-column{height:auto;min-height:0}
-  .right-column .matches-panel{flex:0 0 auto}
-  .my-offers-panel .listing-list{max-height:180px}
-}
-
-
-/* Four independently resizable marketplace panels. */
-@media(min-width:701px){
-  .two-panel#fourPanelLayout{
-    --left-pane:32%;
-    --top-pane:62%;
-    display:grid;
-    grid-template-columns:minmax(240px,var(--left-pane)) 10px minmax(300px,1fr);
-    grid-template-rows:minmax(190px,var(--top-pane)) 10px minmax(170px,1fr);
-    grid-template-areas:
-      "search v matches"
-      "h cross h2"
-      "post v2 mine";
-    gap:0;
-    height:min(760px,calc(100vh - 145px));
-    min-height:420px;
-    align-items:stretch;
-  }
-  .grid-search{grid-area:search;min-width:0;min-height:0;overflow:auto;margin:0!important}
-  .grid-post{grid-area:post;min-width:0;min-height:0;overflow:auto;margin:0!important}
-  .grid-matches{grid-area:matches;min-width:0;min-height:0;height:auto!important;overflow:hidden;display:flex;flex-direction:column}
-  .grid-mine{grid-area:mine;min-width:0;min-height:0;max-height:none!important;overflow:hidden;display:flex;flex-direction:column}
-  .grid-mine[hidden]{display:none}
-  .grid-matches .listing-list,.grid-mine .listing-list{flex:1 1 auto;min-height:0;max-height:none;overflow:auto}
-  .layout-splitter{position:relative;z-index:5;background:#b9b9b9;touch-action:none;user-select:none}
-  .layout-splitter:hover,.layout-splitter:focus{background:#777;outline:2px solid #888;outline-offset:-2px}
-  .vertical-splitter{grid-row:1 / 4;grid-column:2;cursor:col-resize}
-  .horizontal-splitter{grid-row:2;grid-column:1 / 4;cursor:row-resize}
-  .splitter-cross{grid-area:cross;background:#b9b9b9;z-index:6;pointer-events:none}
-}
-@media(max-width:700px){
-  .two-panel#fourPanelLayout{display:flex;flex-direction:column;height:auto;min-height:0;gap:14px}
-  .layout-splitter,.splitter-cross{display:none}
-  .grid-search,.grid-post,.grid-matches,.grid-mine{width:100%;min-height:0;height:auto;max-height:none;overflow:visible}
-  .grid-post{margin-top:0!important}
-  .grid-matches{max-height:65vh;display:flex;flex-direction:column;overflow:hidden}
-  .grid-matches .listing-list,.grid-mine .listing-list{max-height:180px;overflow-y:auto}
-}
-
-
-/* Edit and delete controls appear only on the signed-in user's own offers. */
-.offer-actions{display:flex;gap:7px;margin-top:9px}
-.offer-actions .plain-button{font-size:11px;padding:5px 9px}
-.offer-actions button:disabled{opacity:.55;cursor:wait}
-
+#postOfferButton{position:relative;z-index:2;pointer-events:auto;cursor:pointer}#postOfferButton:disabled{opacity:.65;cursor:wait}
+.right-column{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0;height:100%}.my-offers-panel{border:1px solid #aaa;background:#fff;min-height:0;overflow:hidden;flex:0 0 auto}.my-offers-panel[hidden]{display:none}.my-offers-panel .matches-heading{padding:10px 14px}.my-offers-panel .matches-heading h2{font-size:17px}.my-offers-panel .listing-list{max-height:190px;overflow-y:auto}.right-column .matches-panel{flex:1 1 auto;min-height:0}
+@media(max-width:700px){.right-column{height:auto;min-height:0}.right-column .matches-panel{flex:0 0 auto}.my-offers-panel .listing-list{max-height:180px}}
+@media(min-width:701px){.two-panel#fourPanelLayout{--left-pane:32%;--top-pane:62%;display:grid;grid-template-columns:minmax(240px,var(--left-pane)) 10px minmax(300px,1fr);grid-template-rows:minmax(190px,var(--top-pane)) 10px minmax(170px,1fr);grid-template-areas:"search v matches" "h cross h2" "post v2 mine";gap:0;height:min(760px,calc(100vh - 145px));min-height:420px;align-items:stretch}.grid-search{grid-area:search;min-width:0;min-height:0;overflow:auto;margin:0!important}.grid-post{grid-area:post;min-width:0;min-height:0;overflow:auto;margin:0!important}.grid-matches{grid-area:matches;min-width:0;min-height:0;height:auto!important;overflow:hidden;display:flex;flex-direction:column}.grid-mine{grid-area:mine;min-width:0;min-height:0;max-height:none!important;overflow:hidden;display:flex;flex-direction:column}.grid-mine[hidden]{display:none}.grid-matches .listing-list,.grid-mine .listing-list{flex:1 1 auto;min-height:0;max-height:none;overflow:auto}.layout-splitter{position:relative;z-index:5;background:#b9b9b9;touch-action:none;user-select:none}.layout-splitter:hover,.layout-splitter:focus{background:#777;outline:2px solid #888;outline-offset:-2px}.vertical-splitter{grid-row:1 / 4;grid-column:2;cursor:col-resize}.horizontal-splitter{grid-row:2;grid-column:1 / 4;cursor:row-resize}.splitter-cross{grid-area:cross;background:#b9b9b9;z-index:6;pointer-events:none}}
+@media(max-width:700px){.two-panel#fourPanelLayout{display:flex;flex-direction:column;height:auto;min-height:0;gap:14px}.layout-splitter,.splitter-cross{display:none}.grid-search,.grid-post,.grid-matches,.grid-mine{width:100%;min-height:0;height:auto;max-height:none;overflow:visible}.grid-post{margin-top:0!important}.grid-matches{max-height:65vh;display:flex;flex-direction:column;overflow:hidden}.grid-matches .listing-list,.grid-mine .listing-list{max-height:180px;overflow-y:auto}}
+.offer-actions{display:flex;gap:7px;margin-top:9px}.offer-actions .plain-button{font-size:11px;padding:5px 9px}.offer-actions button:disabled{opacity:.55;cursor:wait}
 .offer-id{font-size:11px;color:#555;font-weight:bold;margin:0 0 5px;letter-spacing:.2px}
-
-
-/* Matching offers are always read-only, even if stale markup is rendered. */
 #matchList .offer-actions{display:none!important}
+
+/* Match the search panel title to the MATCHING OFFERS heading. */
+.search-panel h1{font-size:19px;font-weight:normal;color:var(--blue);margin:0 0 5px}
