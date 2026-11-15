@@ -153,3 +153,9 @@ footer{display:flex;gap:18px;align-items:center;border-top:1px solid #ccc;backgr
   .grid-matches{max-height:65vh;display:flex;flex-direction:column;overflow:hidden}
   .grid-matches .listing-list,.grid-mine .listing-list{max-height:180px;overflow-y:auto}
 }
+
+
+/* Edit and delete controls appear only on the signed-in user's own offers. */
+.offer-actions{display:flex;gap:7px;margin-top:9px}
+.offer-actions .plain-button{font-size:11px;padding:5px 9px}
+.offer-actions button:disabled{opacity:.55;cursor:wait}
