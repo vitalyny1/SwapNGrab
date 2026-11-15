@@ -10,9 +10,28 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE
 const el = id => document.getElementById(id);
 const trim = id => el(id).value.trim();
 const words = s => (s || "").toLowerCase().split(/[^a-z0-9]+/).filter(x => x.length > 1);
-const overlaps = (a, b) => {
-  const set = new Set(words(b));
-  return words(a).some(x => set.has(x));
+// Commas and "or" separate alternatives; words within a phrase stay together.
+const searchAlternatives = value => (value || "")
+  .split(/\s*(?:,|\bor\b)\s*/i)
+  .map(part => words(part))
+  .filter(tokens => tokens.length);
+const synonymGroups = [
+  ["car","automobile","auto","vehicle"], ["scooter","moped"],
+  ["bike","bicycle"], ["cellphone","mobile","smartphone"],
+  ["sofa","couch"], ["television","tv"], ["refrigerator","fridge"],
+  ["computer","pc"], ["laptop","notebook"], ["jewelry","jewellery"],
+  ["sneakers","trainers"], ["apartment","flat"], ["truck","pickup"],
+  ["motorcycle","motorbike"]
+];
+const synonymLookup = new Map();
+synonymGroups.forEach(group => group.forEach(word => synonymLookup.set(word,new Set(group))));
+const sameMeaning = (a,b) => a === b || !!synonymLookup.get(a)?.has(b);
+const alternativeMatches = (alternatives,text) => {
+  if (!alternatives.length) return true;
+  const available = words(text);
+  return alternatives.some(tokens => tokens.every(token =>
+    available.some(candidate => sameMeaning(token,candidate))
+  ));
 };
 const escapeHTML = s => String(s ?? "").replace(/[&<>"']/g, ch => ({
   "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
@@ -45,58 +64,6 @@ const miles = (a,b) => {
   const h=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;
   return 3958.8*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h));
 };
-
-// Free semantic matching runs in the visitor's browser. The model is downloaded
-// once and cached by the browser; no listing text is sent to an AI API.
-let embeddingPipelinePromise = null;
-const AI_MATCH_THRESHOLD = 0.45;
-async function getEmbeddingPipeline() {
-  if (!embeddingPipelinePromise) {
-    embeddingPipelinePromise = (async () => {
-      const { pipeline } = await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2");
-      return pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
-    })().catch(error => {
-      embeddingPipelinePromise = null;
-      throw error;
-    });
-  }
-  return embeddingPipelinePromise;
-}
-async function getAiMatchScores(want, have, items) {
-  // Treat words and comma/OR-separated phrases as alternatives. Keep the full
-  // phrase too, so multi-word concepts such as "golf clubs" can still match.
-  const alternatives = value => {
-    if (!value) return [];
-    const parts = [value, ...value.split(/\\s*(?:,|\\bor\\b)\\s*/i)];
-    value.split(/[^a-z0-9]+/i).filter(word => word.length > 1).forEach(word => parts.push(word));
-    return [...new Set(parts.map(part => part.trim()).filter(Boolean))];
-  };
-  const wantTerms = alternatives(want);
-  const haveTerms = alternatives(have);
-  const texts = [...wantTerms, ...haveTerms];
-  items.forEach(item => texts.push(item.have_text || " "));
-  items.forEach(item => texts.push(item.want_text || "open to any offer"));
-  const extractor = await getEmbeddingPipeline();
-  const result = await extractor(texts, { pooling: "mean", normalize: true });
-  const vectors = result.tolist();
-  const dot = (a,b) => a.reduce((sum,value,index)=>sum+value*b[index],0);
-  const bestScore = (terms, offset, target) => terms.length
-    ? Math.max(...terms.map((_,i)=>dot(vectors[offset+i],target)))
-    : 1;
-  const scores = new Map();
-  const haveOffset = wantTerms.length + haveTerms.length;
-  const wantListingsOffset = haveOffset + items.length;
-  items.forEach((item,index) => {
-    const wantScore = want ? bestScore(wantTerms,0,vectors[haveOffset+index]) : 1;
-    const haveScore = have
-      ? (item.want_text ? bestScore(haveTerms,wantTerms.length,vectors[wantListingsOffset+index]) : 1)
-      : 1;
-    scores.set(item.id, want && have ? Math.min(wantScore,haveScore) : (want ? wantScore : haveScore));
-  });
-  return scores;
-}
-
-
 
 // Drag either divider to resize the four desktop panels.
 (function enablePanelResizing(){
@@ -203,40 +170,35 @@ function renderMyOffers() {
     : '<p class="empty-state">You have not posted any offers yet.</p>';
 }
 
-function renderListings(applySearch, aiScores = null, matchMode = "") {
-  const want = trim("wantInput");
-  const have = trim("haveInput");
+function renderListings(applySearch) {
+  const want = searchAlternatives(trim("wantInput"));
+  const have = searchAlternatives(trim("haveInput"));
   const radius = Number(el("distanceInput").value);
   let list = currentListings.filter(item => {
     if (currentUser && String(item.owner_id) === String(currentUser.id)) return false;
     if (myListings.some(own => String(own.id) === String(item.id))) return false;
-    // Keep offers with unknown locations in the results; distance can only
-    // exclude listings when their coordinates are known.
     if (locationCenter && item.latitude != null && item.longitude != null &&
         miles(locationCenter,{lat:item.latitude,lon:item.longitude}) > radius) return false;
-    if (applySearch && aiScores) {
-      if ((aiScores.get(item.id) ?? -1) < AI_MATCH_THRESHOLD) return false;
-    } else {
-      if (applySearch && want && !overlaps(want,[item.have_text,(item.keywords||[]).join(" ")].join(" "))) return false;
-      if (applySearch && have && item.want_text && !overlaps(have,item.want_text)) return false;
+    if (applySearch) {
+      const offered = [item.have_text,(item.keywords||[]).join(" ")].filter(Boolean).join(" ");
+      const wanted = item.want_text || "";
+      if (!alternativeMatches(want,offered)) return false;
+      if (have.length && wanted && !alternativeMatches(have,wanted)) return false;
+      // A member with no stated WANT is open to any offer.
     }
     return true;
   });
   const distanceFor = item => locationCenter && item.latitude != null && item.longitude != null
     ? miles(locationCenter,{lat:item.latitude,lon:item.longitude})
     : Infinity;
-  if (aiScores) {
-    list.sort((a,b)=>(aiScores.get(b.id)||0)-(aiScores.get(a.id)||0) || distanceFor(a)-distanceFor(b));
-  } else if (locationCenter) {
-    list.sort((a,b)=>distanceFor(a)-distanceFor(b));
-  }
+  if (locationCenter) list.sort((a,b)=>distanceFor(a)-distanceFor(b));
   el("matchList").innerHTML = list.length
     ? list.map(item=>listingCard(item,false)).join("")
-    : '<p class="empty-state">No offers found. Try a larger distance, ALL categories, or different search words.</p>';
+    : '<p class="empty-state">No offers found. Try a larger distance or different search words.</p>';
   el("matchCount").textContent = list.length+" offer"+(list.length===1?"":"s");
   const locationText = locationCenter ? " · within "+radius+" miles of "+locationCenter.label : "";
   el("matchCaption").textContent = (locationText ? locationText.slice(3) : "All offers")+
-    (applySearch ? (matchMode==="ai" ? " · AI semantic matches" : matchMode==="fallback" ? " · keyword matches (AI unavailable)" : " · reciprocal matches") : " · newest first");
+    (applySearch ? " · keyword and synonym matches" : " · newest first");
 }
 
 async function findMatches() {
@@ -244,22 +206,8 @@ async function findMatches() {
   button.disabled = true;
   try {
     const location = trim("locationInput");
-    const want = trim("wantInput");
-    const have = trim("haveInput");
     locationCenter = location ? await geocode(location) : null;
-    if (want || have) {
-      el("matchCaption").textContent = "Loading free AI matching model…";
-      try {
-        const candidates = currentListings.filter(item => !currentUser || item.owner_id !== currentUser.id);
-        const aiScores = await getAiMatchScores(want,have,candidates);
-        renderListings(true,aiScores,"ai");
-      } catch (aiError) {
-        console.warn("AI matching unavailable; using keyword matching.",aiError);
-        renderListings(true,null,"fallback");
-      }
-    } else {
-      renderListings(true);
-    }
+    renderListings(true);
   } catch (error) {
     el("matchList").innerHTML = '<p class="empty-state">'+escapeHTML(error.message)+'</p>';
     el("matchCount").textContent = "0 offers";
